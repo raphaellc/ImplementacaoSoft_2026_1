@@ -43,7 +43,7 @@ Siga estes passos para cada nova atividade:
     ```
 4.  **Envie para o GitHub:**
     ```bash
-    git push origin sua-branch-de-entrega
+    git push origin sua-branch
     ```
 5.  **Abra um Pull Request (PR):** No GitHub, solicite o PR da sua branch para a branch **`entrega`**.
 
