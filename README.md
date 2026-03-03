@@ -29,20 +29,24 @@ Devem ser colocados em uma pasta específica na **raiz do repositório**.
 
 Siga estes passos para cada nova atividade:
 
-1.  **Sincronize seu repositório local:**
+1.  **Sincronize seu repositório local a partir da main:**
     ```bash
-    git checkout entrega
-    git pull origin entrega
+    git checkout main
+    git pull origin main
     ```
-2.  **Crie uma branch para sua tarefa:**
-    * *Individual:* `git checkout -b feature/nome-aluno-ex1`
-    * *Grupo:* `git checkout -b feature/nome-do-grupo`
+2.  **Crie uma branch para suas tarefas a partir da branch main:**
+    * *Individual:* `git checkout -b nome-aluno`
+    * *Grupo:* `git checkout -b nome-do-grupo`
 3.  **Desenvolva e Commite:** Certifique-se de que seu código compila localmente.
+    ```bash
+    git commit -m "exercicio x - atualizaçao Y | Final"
+    ```
 4.  **Envie para o GitHub:**
     ```bash
     git push origin sua-branch-de-entrega
     ```
-5.  **Abra um Pull Request (PR):** No GitHub, solicite o merge da sua branch para a branch **`entrega`**.
+5.  **Abra um Pull Request (PR):** No GitHub, solicite o PR da sua branch para a branch **`entrega`**.
+
 
 ---
 
