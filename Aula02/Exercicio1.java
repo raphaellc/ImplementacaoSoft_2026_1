@@ -1,30 +1,35 @@
+package Aula02;
+
 import java.util.Scanner;
+import java.util.Random;
 
-public class Exercicio1{
-    public static void main(String args[]){
+public class Exercicio1 {
+    public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
+        Random random = new Random();
 
-        System.out.println("Digite quantas linhas deseja preencher: ");
-        int qtdLinhas = scan.nextInt();
+        System.out.print("Número de linhas (n): ");
+        int n = scan.nextInt();
+        System.out.print("Número de colunas (m): ");
+        int m = scan.nextInt();
 
-        System.out.println("Digite quantas colunas deseja preencher: ");
-        int qtdColunas = scan.nextInt();
+        System.out.print("Digite as 5 letras (sem espaços): ");
+        String entrada = scan.next();
 
-        int [][] matriz = new int [qtdLinhas][qtdColunas];
-
-        System.out.println("Agora, preenche os valres da matriz: ");
-        for(int i = 0; i < qtdLinhas; i++){
-            for (int j = 0; j < qtdColunas; j++){
-                System.out.printf("Elemento [%d][%d]: ", i, j);
-                matriz[i][j] = scan.nextInt();
-            }
+        if (entrada.length() != 5) {
+            System.out.println("Erro: Informe exatamente 5 letras.");
+            return;
         }
 
-        System.out.println("Sua matriz foi criada: ");
-        for(int i = 0; i < qtdLinhas; i++){
-            for (int j = 0; j < qtdColunas; j++){
-                    System.out.println("[" + matriz[i][j] + "]");
+        char[] letras = entrada.toCharArray();
+
+        System.out.println("Tabuleiro Gerado: ");
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                int indiceSorteado = random.nextInt(5);
+                System.out.print(letras[indiceSorteado] + " ");
             }
+            System.out.println();
         }
     }
 }
