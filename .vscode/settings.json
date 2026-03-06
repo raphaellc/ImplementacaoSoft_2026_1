@@ -1,0 +1,7 @@
+{
+  "sonarlint.rules": {
+    "java:S106": {
+      "level": "off"
+    }
+  }
+}
