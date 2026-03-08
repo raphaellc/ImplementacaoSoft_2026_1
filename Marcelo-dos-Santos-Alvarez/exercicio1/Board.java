@@ -42,14 +42,14 @@ public class Board {
 		String letters = readLetters("Informe 5 letras aleatórias: ");
 
 		char[][] board = new char[rows][cols];
-		Random rand = new Random();
+		Random random = new Random();
 
 		int limit = Math.min(letters.length(), rows * cols);
 
 		for (int i = 0; i < limit; i++) {
 			while (true) {
-				int r = rand.nextInt(rows);
-				int c = rand.nextInt(cols);
+				int r = random.nextInt(rows);
+				int c = random.nextInt(cols);
 
 				if (board[r][c] == '\0') {
 					board[r][c] = letters.charAt(i);
