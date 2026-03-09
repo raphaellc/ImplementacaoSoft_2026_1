@@ -1,4 +1,4 @@
-package Exercicio2;
+package ExerciciosProficiencia.Exercicio2;
 
 public class Produto {
     private float preco;
