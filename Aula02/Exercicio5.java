@@ -30,5 +30,13 @@ public class Exercicio5 {
         }
 
         System.out.println("\nMaior: " + maior + " - Menor: " + menor);    
+    
+        int primeiro = vetor[0];
+        for(int i = 0; i < vetor.length - 1; i++){
+            vetor[i] =  vetor[i+1];
+        }    
+        vetor[vetor.length - 1] = primeiro;
+
+        System.out.println("Vetor após rotação: " + Arrays.toString(vetor));
     }
 }
