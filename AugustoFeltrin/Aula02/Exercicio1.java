@@ -1,4 +1,4 @@
-package Aula02;
+package AugustoFeltrin.Aula02;
 
 import java.util.Scanner;
 import java.util.Random;

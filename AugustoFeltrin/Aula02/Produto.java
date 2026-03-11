@@ -1,4 +1,4 @@
-package Aula02;
+package AugustoFeltrin.Aula02;
 
 public class Produto {
     private float preco;

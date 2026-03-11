@@ -1,4 +1,4 @@
-package Aula02;
+package AugustoFeltrin.Aula02;
 
 public class ProdutoMain {
     public static void main(String[] args) {
