@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+ 
+    <modelVersion>4.0.0</modelVersion>
+ 
+    <groupId>br.edu.projeto</groupId>
+    <artifactId>todo-mvc</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+ 
+    <name>To-Do List MVC</name>
+    <description>Aplicação de gerenciamento de tarefas usando padrão MVC com Java 25</description>
+ 
+    <properties>
+        <maven.compiler.source>25</maven.compiler.source>
+        <maven.compiler.target>25</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+ 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <release>25</release>
+                    <!-- Habilita funcionalidades preview do Java 25 -->
+                    <compilerArgs>
+                        <arg>--enable-preview</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+ 
+            <!-- Plugin para executar a aplicação via: mvn exec:java -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <mainClass>br.edu.projeto.Main</mainClass>
+                    <commandlineArgs>--enable-preview</commandlineArgs>
+                </configuration>
+            </plugin>
+ 
+            <!-- Plugin para gerar JAR executável -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.4.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>br.edu.projeto.Main</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+ 
+</project>
