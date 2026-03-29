@@ -69,4 +69,4 @@ Seguimos as convenções oficiais da linguagem para garantir que o código seja 
 * **Classes e Interfaces:** Devem utilizar `PascalCase` (ex: `CalculadoraDeEstoque`, `Pagamento`). O nome do arquivo `.java` deve ser exatamente igual ao da classe pública.
 * **Métodos e Atributos:** Devem utilizar `camelCase`, iniciando com a primeira letra minúscula (ex: `mostrarDetalhes()`, `valorDiaria`).
 * **Constantes:** Escritas em `UPPER_SNAKE_CASE` e declaradas como `static final` (ex: `TAXA_A_RETER`).
-* **Pacotes (Packages):** Escritos totalmente em letras minúsculas, utilizando o domínio reverso (ex: `br.com.empresa.projeto`) para evitar ambiguidade.
+* **Pacotes (Packages):** Escritos totalmente em letras minúsculas, utilizando o domínio reverso (ex: `com.empresa.projeto`) para evitar ambiguidade.
