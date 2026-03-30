@@ -11,12 +11,12 @@ public class DatabaseConnection {
     private static final String PASSWORD = "DevMySQ!";
 
     public static Connection getConnection() throws SQLException {
-        try {
+       // try {
             // Garante que o driver está carregado
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            //Class.forName("com.mysql.cj.jdbc.Driver");
             return DriverManager.getConnection(URL, USER, PASSWORD);
-        } catch (ClassNotFoundException e) {
-            throw new SQLException("Driver MySQL não encontrado", e);
-        }
+        //} catch (ClassNotFoundException e) {
+            //throw new SQLException("Driver MySQL não encontrado", e);
+        //}
     }
 }
