@@ -10,5 +10,6 @@ public class Main {
         TarefaView view = new TarefaView();
         TarefaController controller = new TarefaController(repositorio, view);
         controller.iniciar();
+        view.fechar();
     }
 }

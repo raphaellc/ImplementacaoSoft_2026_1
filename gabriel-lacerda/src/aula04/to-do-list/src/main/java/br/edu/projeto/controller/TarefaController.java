@@ -20,17 +20,24 @@ public class TarefaController {
             switch (opcao) {
                 case 1 -> {
                     String descricao = view.lerDescricao();
-                    repositorio.adicionar(descricao);
-                    view.exibirMensagem("Tarefa adicionada.");
+                    if (descricao.isBlank()) {
+                        view.exibirMensagem("Descricao nao pode ser vazia.");
+                    } else {
+                        repositorio.adicionar(descricao);
+                        view.exibirMensagem("Tarefa adicionada com sucesso!");
+                    }
                 }
                 case 2 -> view.exibirTarefas(repositorio.listarTodas());
                 case 3 -> {
                     int id = view.lerId();
                     boolean ok = repositorio.concluir(id);
-                    view.exibirMensagem(ok ? "Tarefa concluida." : "ID nao encontrado.");
+                    view.exibirMensagem(ok ? "Tarefa concluida!" : "ID nao encontrado.");
                 }
-                case 0 -> rodando = false;
-                default -> view.exibirMensagem("Opcao invalida.");
+                case 0 -> {
+                    view.exibirMensagem("Encerrando... Ate logo!");
+                    rodando = false;
+                }
+                default -> view.exibirMensagem("Opcao invalida. Tente novamente.");
             }
         }
     }

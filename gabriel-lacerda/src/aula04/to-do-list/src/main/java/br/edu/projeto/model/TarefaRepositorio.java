@@ -2,6 +2,7 @@ package br.edu.projeto.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class TarefaRepositorio {
 
@@ -17,12 +18,11 @@ public class TarefaRepositorio {
     }
 
     public boolean concluir(int id) {
-        for (int i = 0; i < tarefas.size(); i++) {
-            if (tarefas.get(i).id() == id) {
-                tarefas.set(i, tarefas.get(i).comConcluida());
-                return true;
-            }
-        }
-        return false;
+        Optional<Tarefa> encontrada = tarefas.stream()
+                .filter(t -> t.id() == id)
+                .findFirst();
+
+        encontrada.ifPresent(t -> tarefas.set(tarefas.indexOf(t), t.comConcluida()));
+        return encontrada.isPresent();
     }
 }
