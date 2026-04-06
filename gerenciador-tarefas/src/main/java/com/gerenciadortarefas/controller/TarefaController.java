@@ -1,19 +1,19 @@
 package com.gerenciadortarefas.controller;
 
 import java.util.List;
-import java.util.Optional;
-
+import com.gerenciadortarefas.service.*;
 import com.gerenciadortarefas.model.*;
 import com.gerenciadortarefas.view.*;
 
 public class TarefaController {
     private TarefaView tarefa_view;
-    private TarefaRepository tarefa_repository;
+    private TarefaService tarefa_service;
+    
 
 
-    public TarefaController(TarefaView view, TarefaRepository repository){
+    public TarefaController(TarefaView view, TarefaService service){
         this.tarefa_view = view;
-        this.tarefa_repository = repository;
+        this.tarefa_service = service;
     }
 
     public void iniciarGerenciadorTarefas(){
@@ -44,31 +44,20 @@ public class TarefaController {
 
     public void adicionarTarefa(){
         String descricao = tarefa_view.adicionarTarefa();
-        tarefa_repository.adicionarTarefa(descricao);
+        tarefa_service.adicionarTarefa(descricao);
         listarTarefas();
         
     }
     public void listarTarefas(){
-        List<Tarefa> tarefas = tarefa_repository.listarTarefas();
+        List<Tarefa> tarefas = tarefa_service.listarTarefas();
         tarefa_view.listarTarefas(tarefas);
 
     }
-    private String marcarTarefaConcluida(int id){
-        Optional<Tarefa> tarefaOptional = tarefa_repository.buscarPorId(id);
-        if (tarefaOptional.isPresent()) {
-            Tarefa tarefa = tarefaOptional.get();
-            Tarefa tarefaModificada = tarefa.comConcluida(true);
-            if (tarefa_repository.atualizarTarefa(tarefaModificada)) {
-                return "Tarefa " + id + " marcada como concluída.";
-            } 
-            return "Erro ao atualizar a tarefa.";
-        }
-        return "Tarefa com ID " + id + " não encontrada.";
-    }
-
+    
     public void marcarTarefaConcluida() {
         int id = tarefa_view.marcarTarefaConcluida();
-        tarefa_view.exibirMensagem(marcarTarefaConcluida(id));
+        String mensagem = tarefa_service.marcarTarefaConcluida(id);
+        tarefa_view.exibirMensagem(mensagem);
 
     }
 }
