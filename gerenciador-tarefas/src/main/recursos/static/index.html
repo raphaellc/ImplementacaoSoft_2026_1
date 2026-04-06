@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Tarefas</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f9; }
+        h1 { color: #333; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        ul { list-style: none; padding: 0; }
+        li { padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        li:last-child { border-bottom: none; }
+        .concluida { text-decoration: line-through; color: #888; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8em; }
+        .status-ok { background: #d4edda; color: #155724; }
+        .status-pendente { background: #fff3cd; color: #856404; }
+        button { cursor: pointer; padding: 5px 10px; background: #007bff; color: white; border: none; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Minhas Tarefas</h1>
+    <button onclick="carregarTarefas()">Atualizar Lista</button>
+    <ul id="lista-tarefas">
+        <li>Carregando tarefas...</li>
+    </ul>
+</div>
+
+<script>
+    const API_URL = 'http://localhost:8080/api/tarefas';
+
+    async function carregarTarefas() {
+        const listaUl = document.getElementById('lista-tarefas');
+        
+        try {
+            const response = await fetch(API_URL);
+            
+            if (!response.ok) throw new Error('Erro ao buscar dados da API');
+            
+            const tarefas = await response.json();
+            listaUl.innerHTML = ''; // Limpa a lista
+
+            if (tarefas.length === 0) {
+                listaUl.innerHTML = '<li>Nenhuma tarefa encontrada.</li>';
+                return;
+            }
+
+            tarefas.forEach(tarefa => {
+                const li = document.createElement('li');
+                
+                // O record Tarefa no Java gera campos: id, descricao, concluida
+                li.innerHTML = `
+                    <span class="${tarefa.concluida ? 'concluida' : ''}">
+                        <strong>#${tarefa.id}</strong> - ${tarefa.descricao}
+                    </span>
+                    <span class="badge ${tarefa.concluida ? 'status-ok' : 'status-pendente'}">
+                        ${tarefa.concluida ? 'Concluída' : 'Pendente'}
+                    </span>
+                `;
+                listaUl.appendChild(li);
+            });
+
+        } catch (error) {
+            console.error('Erro:', error);
+            listaUl.innerHTML = `<li style="color:red">Erro ao conectar com a API: ${error.message}</li>`;
+        }
+    }
+
+    // Carregar ao abrir a página
+    window.onload = carregarTarefas;
+</script>
+
+</body>
+</html>
