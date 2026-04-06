@@ -45,6 +45,15 @@
                 </configuration>
             </plugin>
 
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.6.3</version>
+                <configuration>
+                    <mainClass>com.gerenciadortarefas.GerenciadorTarefas</mainClass>
+                </configuration>
+            </plugin>
+            
             <!-- Gera JAR executável com todas as dependências (fat jar) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
