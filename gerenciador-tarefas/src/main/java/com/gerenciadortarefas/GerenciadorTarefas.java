@@ -15,7 +15,9 @@ import com.gerenciadortarefas.service.TarefaServiceImpl;
 public class GerenciadorTarefas {
     public static void main(String[] args) {
        //TarefaView view = new TarefaView();
-        TarefaRepository repository = new TarefaRepository();
+        TarefaRepository repositoryMySql = new TarefaRepositoryMySQL();
+        TarefaRepository repositoryH2 = new TarefaRepositoryH2();
+        TarefaRepository repository = repositoryMySql;
         TarefaService service = new TarefaServiceImpl(repository);
        
         /* 
