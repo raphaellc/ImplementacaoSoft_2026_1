@@ -26,39 +26,35 @@ public class LivroView {
 
     /**
      * Solicita e valida os dados para um novo livro.
-     * Retorna um array: [titulo, autor, isbn].
+     * Retorna um array: [titulo, autor].
      * Validação ocorre na View, conforme diagrama de sequência.
      */
     public String[] solicitarDadosLivro() {
-        String titulo, autor, isbn;
+        String titulo, autor;
 
         while (true) {
             System.out.print("Título: ");
             titulo = scanner.nextLine().trim();
             System.out.print("Autor: ");
             autor = scanner.nextLine().trim();
-            System.out.print("ISBN: ");
-            isbn = scanner.nextLine().trim();
 
-            String erroValidacao = validarDados(titulo, autor, isbn);
+            String erroValidacao = validarDados(titulo, autor);
             if (erroValidacao == null) {
                 break;
             }
             System.out.println("[Erro de validação] " + erroValidacao + " Tente novamente.\n");
         }
 
-        return new String[]{titulo, autor, isbn};
+        return new String[]{titulo, autor};
     }
 
     /**
      * Valida os campos do livro. Retorna mensagem de erro ou null se válido.
      * Validação realizada na View conforme diagrama de sequência.
      */
-    private String validarDados(String titulo, String autor, String isbn) {
+    private String validarDados(String titulo, String autor) {
         if (titulo == null || titulo.isBlank()) return "Título não pode ser vazio.";
         if (autor == null || autor.isBlank())   return "Autor não pode ser vazio.";
-        if (isbn == null || isbn.isBlank())     return "ISBN não pode ser vazio.";
-        if (!isbn.matches("\\d{10}|\\d{13}"))  return "ISBN inválido (deve ter 10 ou 13 dígitos).";
         return null;
     }
 
@@ -80,19 +76,15 @@ public class LivroView {
         System.out.print("Novo autor [" + livroAtual.autor() + "]: ");
         String autor = scanner.nextLine().trim();
 
-        System.out.print("Novo ISBN [" + livroAtual.isbn() + "]: ");
-        String isbn = scanner.nextLine().trim();
-
         System.out.print("Disponível? (s/n) [" + (livroAtual.disponivel() ? "s" : "n") + "]: ");
         String dispInput = scanner.nextLine().trim().toLowerCase();
 
         // Aplica valor atual se campo deixado em branco
         String novoTitulo     = titulo.isBlank()    ? livroAtual.titulo()                   : titulo;
         String novoAutor      = autor.isBlank()     ? livroAtual.autor()                    : autor;
-        String novoIsbn       = isbn.isBlank()      ? livroAtual.isbn()                     : isbn;
         String novoDisponivel = dispInput.isBlank() ? (livroAtual.disponivel() ? "s" : "n") : dispInput;
 
-        return new String[]{novoTitulo, novoAutor, novoIsbn, novoDisponivel};
+        return new String[]{novoTitulo, novoAutor, novoDisponivel};
     }
 
     public void listarLivros(List<Livro> livros) {

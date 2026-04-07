@@ -31,18 +31,13 @@ public class LivroController {
         } while (opcao != 0);
     }
 
-    // -------------------------------------------------------------------------
-    // CREATE
-    // -------------------------------------------------------------------------
-
-    public void addBook() {
-        // View valida os dados antes de enviar ao Controller (conforme diagrama)
+       public void addBook() {
+        // View valida os dados antes de enviar ao Controller
         String[] dados = livroView.solicitarDadosLivro();
         String titulo = dados[0];
         String autor  = dados[1];
-        String isbn   = dados[2];
 
-        int idGerado = livroRepository.addBook(titulo, autor, isbn);
+        int idGerado = livroRepository.addBook(titulo, autor);
 
         if (idGerado > 0) {
             livroView.exibirMensagem("Livro adicionado com sucesso! ID: " + idGerado);
@@ -52,23 +47,17 @@ public class LivroController {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // READ
-    // -------------------------------------------------------------------------
-
+  
     public void listBooks() {
         List<Livro> livros = livroRepository.listBooks();
         livroView.listarLivros(livros);
     }
 
-    // -------------------------------------------------------------------------
-    // UPDATE
-    // -------------------------------------------------------------------------
-
+ 
     public void updateBook() {
         int id = livroView.solicitarId("atualizar");
 
-        // Busca o livro — notFound tratado aqui no Controller (conforme diagrama)
+        // Busca o livro — notFound tratado aqui no Controller 
         Optional<Livro> livroOptional = livroRepository.findById(id);
         if (livroOptional.isEmpty()) {
             livroView.exibirMensagem("Livro com ID " + id + " não encontrado.");
@@ -78,7 +67,6 @@ public class LivroController {
         Livro livroAtual = livroOptional.get();
         String[] alteracoes = livroView.solicitarAtualizacoes(livroAtual);
 
-        // Constrói o livro atualizado usando os métodos "com*" do Record (imutabilidade)
         Livro livroAtualizado = livroAtual
                 .comTitulo(alteracoes[0])
                 .comAutor(alteracoes[1])
@@ -93,15 +81,11 @@ public class LivroController {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // DELETE
-    // -------------------------------------------------------------------------
 
     public void deleteBook() {
         int id = livroView.solicitarId("remover");
 
-        // Busca o livro — notFound tratado aqui no Controller (conforme diagrama)
-        Optional<Livro> livroOptional = livroRepository.findById(id);
+                Optional<Livro> livroOptional = livroRepository.findById(id);
         if (livroOptional.isEmpty()) {
             livroView.exibirMensagem("Livro com ID " + id + " não encontrado.");
             return;
