@@ -1,16 +1,37 @@
-package Aula05.src.main.java.org.example;
+package org.example;
 
-import Aula05.src.main.java.org.example.controller.BookController;
-import Aula05.src.main.java.org.example.repository.BookRepository;
-import Aula05.src.main.java.org.example.view.BookView;
+import com.sun.net.httpserver.HttpServer;
+import org.example.api.BookHandler;
+import org.example.controller.BookController;
+import org.example.repository.BookRepository;
+import org.example.service.BookService;
+import org.example.view.BookView;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
 
 public class App
 {
     static void main()  {
-        BookController controller = new BookController(new BookView(),new BookRepository());
+        BookRepository repository = new BookRepository();
+        BookController controller = new BookController(new BookView(),new BookService(repository));
+
+        HttpServer server;
+        try {
+            server = HttpServer.create(new InetSocketAddress(8080), 0);
+        } catch (IOException e) {
+            System.out.println("Erro ao inicializar servidor:" + e.getMessage());
+            return;
+        }
+
+        server.createContext("/api/books", new BookHandler(new BookService(repository)));
+
+        server.setExecutor(null);
+        server.start();
+        System.out.println("API rodando em http://localhost:8080/api/books");
 
         try {
-            controller.start();
+            controller.run();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

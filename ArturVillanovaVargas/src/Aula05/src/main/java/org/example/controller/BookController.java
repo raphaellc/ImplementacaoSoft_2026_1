@@ -1,18 +1,18 @@
-package Aula05.src.main.java.org.example.controller;
+package org.example.controller;
 
-import Aula05.src.main.java.org.example.repository.BookRepository;
-import Aula05.src.main.java.org.example.view.BookView;
+import org.example.service.BookService;
+import org.example.view.BookView;
 
 public class BookController {
     private final BookView view;
-    private final BookRepository repository;
+    private final BookService service;
 
-    public BookController(BookView view, BookRepository repository) {
+    public BookController(BookView view, BookService service) {
         this.view = view;
-        this.repository = repository;
+        this.service = service;
     }
 
-    public void start() throws InterruptedException {
+    public void run() throws InterruptedException {
         boolean i = true;
 
         while (i) {
@@ -20,13 +20,16 @@ public class BookController {
 
             switch (choice) {
                 case "1":
-                    getAllBooks();
+                    getAll();
                     break;
                 case "2":
-                    addBook();
+                    add();
                     break;
                 case "3":
-                    rentBook();
+                    rent();
+                    break;
+                case "4":
+                    remove();
                     break;
                 case "0":
                     i = false;
@@ -34,31 +37,46 @@ public class BookController {
         }
     }
 
-    public void addBook() throws InterruptedException {
+    public void add() throws InterruptedException {
         String title = view.addBook();
-        repository.addBook(title);
+        service.add(title);
 
         Thread.sleep(1000);
-        view.addSuccess();
+        view.showSuccess("Livro adicionado com sucesso!");
         Thread.sleep(1000);
     }
 
-    public void rentBook(){
+    public void rent(){
         int id = view.rentBook();
 
         try {
-            repository.rentBook(id);
+            String message = service.rent(id);
 
             Thread.sleep(1000);
-            view.rentSuccess();
+            view.showSuccess(message);
             Thread.sleep(1000);
 
         } catch (Exception e) {
-            view.rentException(e.getMessage());
+            view.showException(e.getMessage());
         }
     }
 
-    public void getAllBooks(){
-        view.getAllBooks(repository.getAllBooks());
+    public void remove() {
+        int id = view.removeBook();
+
+        try {
+            String message = service.remove(id);
+
+            Thread.sleep(1000);
+            view.showSuccess(message);
+            Thread.sleep(1000);
+
+        } catch (Exception e) {
+            view.showException(e.getMessage());
+        }
+    }
+
+    public void getAll(){
+        view.getAllBooks(service.getAll());
     }
 }

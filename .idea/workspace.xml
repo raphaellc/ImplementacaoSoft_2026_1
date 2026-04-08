@@ -5,12 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3a774ff6-f174-43a1-8ba7-42219af49063" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula05/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula05/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula05/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula05/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula05/src/main/java/org/example/App.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/ImplementacaoSoft_2026_1.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ImplementacaoSoft_2026_1.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula04/tarefa/src/main/java/com/artur/controller/TarefaController.java" beforeDir="false" afterPath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula04/tarefa/src/main/java/com/artur/controller/TarefaController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula04/tarefa/src/main/java/com/artur/view/TarefaView.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula05/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula05/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula05/src/main/java/org/example/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula05/src/main/java/org/example/App.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula05/src/main/java/org/example/controller/BookController.java" beforeDir="false" afterPath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula05/src/main/java/org/example/controller/BookController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula05/src/main/java/org/example/model/Book.java" beforeDir="false" afterPath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula05/src/main/java/org/example/model/Book.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula05/src/main/java/org/example/repository/BookRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula05/src/main/java/org/example/view/BookView.java" beforeDir="false" afterPath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula05/src/main/java/org/example/view/BookView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/ImplementacaoSoft_2026_1/Aula04/tarefa/.mvn/jvm.config" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/ImplementacaoSoft_2026_1/Aula04/tarefa/.mvn/maven.config" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/ImplementacaoSoft_2026_1/Aula04/tarefa/pom.xml" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,7 +45,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/raphaellc/ImplementacaoSoft_2026_1.git&quot;,
-    &quot;accountId&quot;: &quot;04ac7c8b-fab5-4e95-a112-952da020c298&quot;
+    &quot;accountId&quot;: &quot;5be44fed-72ee-491d-abad-a06342798b3f&quot;
   }
 }</component>
   <component name="ProjectColorInfo">{
@@ -73,14 +81,6 @@
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\code\ImplementacaoSoft_2026_1\ArturVillanovaVargas" />
     </key>
-  </component>
-  <component name="SharedIndexes">
-    <attachedChunks>
-      <set>
-        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.31033.145" />
-        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.31033.145" />
-      </set>
-    </attachedChunks>
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">

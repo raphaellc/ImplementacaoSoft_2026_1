@@ -1,7 +1,6 @@
 package Aula04.tarefa.src.main.java.com.artur.controller;
 
 import Aula04.tarefa.src.main.java.com.artur.model.Tarefa;
-import Aula04.tarefa.src.main.java.com.artur.view.TarefaView;
 
 import java.util.ArrayList;
 import java.util.List;
