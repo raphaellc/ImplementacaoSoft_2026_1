@@ -14,7 +14,8 @@ public class App
 {
     static void main()  {
         BookRepository repository = new BookRepository();
-        BookController controller = new BookController(new BookView(),new BookService(repository));
+        BookService service = new BookService(repository);
+        BookController controller = new BookController(new BookView(), service);
 
         HttpServer server;
         try {

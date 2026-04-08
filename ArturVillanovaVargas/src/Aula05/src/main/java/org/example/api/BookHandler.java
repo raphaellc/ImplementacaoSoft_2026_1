@@ -28,7 +28,7 @@ public class BookHandler implements HttpHandler {
                 os.write(response);
             }
         } else {
-            exchange.sendResponseHeaders(405, -1); // Method Not Allowed
+            exchange.sendResponseHeaders(405, -1);
         }
     }
 }
