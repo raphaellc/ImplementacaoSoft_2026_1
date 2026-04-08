@@ -21,7 +21,8 @@ public class TarefaRepositoryH2 implements TarefaRepository {
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
         } catch (SQLException e) {
-            System.out.println("Erro ao criar tabela H2: " + e.getMessage());
+            // Não expõe detalhes da exceção SQL ao chamador
+            throw new RuntimeException("Erro ao inicializar banco de dados H2", e);
         }
     }
 
@@ -34,7 +35,7 @@ public class TarefaRepositoryH2 implements TarefaRepository {
             pstmt.setBoolean(2, false);
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("Erro ao adicionar tarefa no H2: " + e.getMessage());
+            throw new RuntimeException("Erro ao adicionar tarefa", e);
         }
     }
 
@@ -48,8 +49,7 @@ public class TarefaRepositoryH2 implements TarefaRepository {
             pstmt.setInt(3, tarefaAtualizada.id());
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.out.println("Erro ao atualizar tarefa no H2: " + e.getMessage());
-            return false;
+            throw new RuntimeException("Erro ao atualizar tarefa", e);
         }
     }
 
@@ -64,7 +64,7 @@ public class TarefaRepositoryH2 implements TarefaRepository {
                 tarefas.add(new Tarefa(rs.getInt("id"), rs.getString("descricao"), rs.getBoolean("concluida")));
             }
         } catch (SQLException e) {
-            System.out.println("Erro ao listar tarefas no H2: " + e.getMessage());
+            throw new RuntimeException("Erro ao listar tarefas", e);
         }
         return tarefas;
     }
@@ -80,7 +80,7 @@ public class TarefaRepositoryH2 implements TarefaRepository {
                 return Optional.of(new Tarefa(rs.getInt("id"), rs.getString("descricao"), rs.getBoolean("concluida")));
             }
         } catch (SQLException e) {
-            System.out.println("Erro ao buscar tarefa no H2: " + e.getMessage());
+            throw new RuntimeException("Erro ao buscar tarefa", e);
         }
         return Optional.empty();
     }

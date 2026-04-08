@@ -6,17 +6,16 @@ import java.sql.SQLException;
 
 public class DatabaseConnection {
     // Endereço do banco: jdbc:mysql://[host]:[porta]/[nome_do_banco]
-    private static final String URL = "jdbc:mysql://localhost:3306/gerenciador_tarefa";
-    private static final String USER = "root";
-    private static final String PASSWORD = "DevMySQ!";
+    private static final String URL = System.getenv().getOrDefault(
+            "DB_URL", "jdbc:mysql://localhost:3306/gerenciador_tarefa");
+    // Credenciais via variáveis de ambiente — nunca hardcode em código-fonte
+    private static final String USER = System.getenv().getOrDefault("DB_USER", "root");
+    private static final String PASSWORD = System.getenv("DB_PASSWORD");
 
     public static Connection getConnection() throws SQLException {
-       // try {
-            // Garante que o driver está carregado
-            //Class.forName("com.mysql.cj.jdbc.Driver");
-            return DriverManager.getConnection(URL, USER, PASSWORD);
-        //} catch (ClassNotFoundException e) {
-            //throw new SQLException("Driver MySQL não encontrado", e);
-        //}
+        if (PASSWORD == null) {
+            throw new SQLException("Variável de ambiente DB_PASSWORD não definida");
+        }
+        return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 }

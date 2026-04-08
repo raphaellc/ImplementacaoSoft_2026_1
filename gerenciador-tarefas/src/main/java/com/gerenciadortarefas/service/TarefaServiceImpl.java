@@ -14,10 +14,13 @@ public class TarefaServiceImpl implements TarefaService {
 
     @Override
     public void adicionarTarefa(String descricao) {
-        // Regra de negócio: não permitir descrições vazias
-        if (descricao != null && !descricao.isBlank()) {
-            repository.adicionarTarefa(descricao);
+        if (descricao == null || descricao.isBlank()) {
+            throw new IllegalArgumentException("A descrição não pode ser vazia");
         }
+        if (descricao.length() > 255) {
+            throw new IllegalArgumentException("A descrição deve ter no máximo 255 caracteres");
+        }
+        repository.adicionarTarefa(descricao.trim());
     }
 
     @Override

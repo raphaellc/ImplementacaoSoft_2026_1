@@ -1,13 +1,12 @@
 package com.gerenciadortarefas;
 
-import com.gerenciadortarefas.model.*;
+import com.gerenciadortarefas.model.TarefaRepository;
+import com.gerenciadortarefas.model.TarefaRepositoryH2;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
 import com.gerenciadortarefas.api.TarefaHandler;
-//import com.gerenciadortarefas.controller.TarefaController;
-import com.gerenciadortarefas.view.TarefaView;
 import com.sun.net.httpserver.HttpServer;
 import com.gerenciadortarefas.service.TarefaService;
 import com.gerenciadortarefas.service.TarefaServiceImpl;
@@ -15,9 +14,8 @@ import com.gerenciadortarefas.service.TarefaServiceImpl;
 public class GerenciadorTarefas {
     public static void main(String[] args) {
        //TarefaView view = new TarefaView();
-        TarefaRepository repositoryMySql = new TarefaRepositoryMySQL();
         TarefaRepository repositoryH2 = new TarefaRepositoryH2();
-        TarefaRepository repository = repositoryMySql;
+        TarefaRepository repository = repositoryH2;
         TarefaService service = new TarefaServiceImpl(repository);
        
         /* 
