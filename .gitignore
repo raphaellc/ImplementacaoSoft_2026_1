@@ -1,9 +1,17 @@
 ############################################
-# Java
+# Java / JDK
 ############################################
+# Bytecode compilado
 *.class
+# Dumps de erro da JVM (gerado em crash)
 hs_err_pid*
 replay_pid*
+# JDK 21+ — dumps de crash do HotSpot
+hs_err_pid*.log
+# Arquivos de snapshot do JFR (Java Flight Recorder — JDK 11+)
+*.jfr
+# Saída do jpackage / jlink (JDK 14+)
+*.jmod
 
 ############################################
 # Logs
@@ -36,30 +44,57 @@ logs/
 ############################################
 # Maven
 ############################################
+# Diretório de build — todos os artefatos gerados
 target/
+# Backups e metadados gerados pelo Maven Release Plugin
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
 pom.xml.next
+pom.xml.bak
+# Artefato gerado pelo Maven Shade Plugin
 dependency-reduced-pom.xml
+# Metadados de build
 buildNumber.properties
+# Tempos de build do Maven Wrapper (gerado automaticamente)
 .mvn/timing.properties
+# Cache local do Maven Wrapper
+.mvn/wrapper/maven-wrapper.jar
+# Arquivos gerados pelo Maven Wrapper (manter maven-wrapper.properties e scripts)
+!.mvn/wrapper/maven-wrapper.properties
+!mvnw
+!mvnw.cmd
 
 ############################################
-# IntelliJ IDEA
+# IntelliJ IDEA / JetBrains
 ############################################
 .idea/
+# Manter arquivos de configuração compartilháveis (opcional — descomente se quiser versionar)
+# !.idea/codeStyles/
+# !.idea/inspectionProfiles/
 *.iml
 *.iws
 *.ipr
+# Diretório de saída do IntelliJ
 out/
+# Arquivos de shelf/patch do IntelliJ
+.shelf/
+# Arquivos gerados por plugins JetBrains
+atlassian-ide-plugin.xml
+# Cache do plugin GitHub Copilot / AI
+.idea/caches/
 
 ############################################
-# Eclipse
+# Eclipse / Spring Tool Suite / Red Hat CodeReady
 ############################################
 .project
 .classpath
 .settings/
+.factorypath
+.apt_generated/
+.apt_generated_test/
+.springBeans
+.sts4-cache/
 .bin/
 .tmp/
 *.tmp
@@ -71,12 +106,18 @@ out/
 # VS Code
 ############################################
 .vscode/
+# Exceções — arquivos de configuração úteis para o time
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+# Histórico local (plugin Local History)
 .history/
+# Workspace específico da máquina
 *.code-workspace
+# Cache do Java Language Server (extensão Java da Microsoft)
+.project
+.classpath
 
 ############################################
 # Gradle (caso exista no ambiente)
@@ -90,6 +131,20 @@ build/
 coverage/
 jacoco.exec
 jacoco/
+# Relatórios do Surefire / Failsafe (gerados em target/, mas por precaução)
+surefire-reports/
+failsafe-reports/
+
+############################################
+# NetBeans
+############################################
+nbproject/private/
+nbbuild/
+dist/
+nbdist/
+nbactions.xml
+nb-configuration.xml
+.nb-gradle/
 
 ############################################
 # Sistema Operacional
@@ -98,12 +153,32 @@ jacoco/
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+$RECYCLE.BIN/
+*.lnk
 
 # macOS
 .DS_Store
 .AppleDouble
 .LSOverride
+._*
+.Spotlight-V100
+.Trashes
 
 # Linux
 *~
-``
+
+############################################
+# Segurança — nunca versionar
+############################################
+*.env
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
+application-local.yml
+application-local.properties
+application-secret*.yml
+application-secret*.properties
