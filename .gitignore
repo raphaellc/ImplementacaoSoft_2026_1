@@ -44,26 +44,36 @@ logs/
 ############################################
 # Maven
 ############################################
-# Diretório de build — todos os artefatos gerados
-target/
+
+# Diretório de build — qualquer profundidade (módulos, subprojetos, etc.)
+**/target/
+
 # Backups e metadados gerados pelo Maven Release Plugin
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
 pom.xml.next
 pom.xml.bak
+release.properties
+
 # Artefato gerado pelo Maven Shade Plugin
 dependency-reduced-pom.xml
+
 # Metadados de build
 buildNumber.properties
-# Tempos de build do Maven Wrapper (gerado automaticamente)
-.mvn/timing.properties
-# Cache local do Maven Wrapper
-.mvn/wrapper/maven-wrapper.jar
-# Arquivos gerados pelo Maven Wrapper (manter maven-wrapper.properties e scripts)
-!.mvn/wrapper/maven-wrapper.properties
-!mvnw
-!mvnw.cmd
+
+# Pasta .mvn — ignorar tudo que é gerado, preservar apenas o essencial
+**/.mvn/timing.properties
+**/.mvn/jvm.config
+**/.mvn/maven.config
+**/.mvn/extensions.xml.bak
+**/.mvn/wrapper/maven-wrapper.jar
+**/.mvn/repository/
+
+# Preservar arquivos do Maven Wrapper que devem ser versionados
+!**/.mvn/wrapper/maven-wrapper.properties
+!**/mvnw
+!**/mvnw.cmd
 
 ############################################
 # IntelliJ IDEA / JetBrains
