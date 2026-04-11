@@ -1,44 +1,111 @@
-body {
-  font-family: sans-serif;
-  margin: 20px;
-  background-color: #f4f4f9;
+:root {
+  --bg: #f4f4f9;
+  --card: #ffffff;
+  --primary: #007bff;
+  --primary-hover: #0056b3;
+  --danger: #dc3545;
+  --text: #333;
+  --border: #eaeaea;
+  --shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
-h1 {
-  color: #333;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  padding: 20px;
 }
 
 .container {
   max-width: 600px;
   margin: auto;
-  background: white;
+  background: var(--card);
   padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+h1 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.input-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  outline: none;
+}
+
+input:focus {
+  border-color: var(--primary);
+}
+
+button {
+  padding: 10px 15px;
+  border: none;
+  background: var(--primary);
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--primary-hover);
 }
 
 ul {
   list-style: none;
-  padding: 0;
 }
 
 li {
-  padding: 10px;
-  border-bottom: 1px solid #eee;
+  margin-bottom: 10px;
+}
+
+.livro-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: var(--card);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
 }
 
-li:last-child {
-  border-bottom: none;
+.livro-info {
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
 
-button {
-  cursor: pointer;
-  padding: 5px 10px;
-  background: #007bff;
-  color: white;
+.delete-btn {
+  background: transparent;
   border: none;
-  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  opacity: 0.6;
+  transition: 0.2s;
+}
+
+.delete-btn:hover {
+  opacity: 1;
+  transform: scale(1.2);
+}
+
+.empty {
+  text-align: center;
+  color: #777;
 }

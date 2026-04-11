@@ -5,23 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gerenciador de Livros</title>
 
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
     <link rel="stylesheet" href="styles.css" />
-    <script src="script.js"></script>
   </head>
+
   <body>
     <div class="container">
-      <h1>Meus Livros</h1>
-      <input
-        type="text"
-        name="novo-livro-input"
-        id="novo-livro-input"
-        placeholder="Nome do novo livro"
-      />
-			<button onclick="adicionarLivro()">Adicionar Livro</button>
-      <button onclick="carregarLivros()">Atualizar Lista</button>
+      <h1>📚 Meus Livros</h1>
+
+      <div class="input-group">
+        <input
+          type="text"
+          id="novo-livro-input"
+          placeholder="Nome do novo livro"
+        />
+        <button onclick="adicionarLivro()">Adicionar</button>
+      </div>
+
       <ul id="lista-livros">
-        <li>Carregando livros...</li>
+        <li class="empty">Carregando livros...</li>
       </ul>
     </div>
+
+    <script src="script.js"></script>
   </body>
 </html>
