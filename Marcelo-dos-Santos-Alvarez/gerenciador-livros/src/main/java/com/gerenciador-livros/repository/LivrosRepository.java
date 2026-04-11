@@ -7,8 +7,6 @@ import java.util.Optional;
 public interface LivrosRepository {
 	void adicionarLivro(String nome);
 
-	boolean atualizarLivro(Livro livro);
-
 	List<Livro> listarLivros();
 
 	Optional<Livro> buscarPorId(int id);

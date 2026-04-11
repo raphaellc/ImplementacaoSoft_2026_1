@@ -39,21 +39,6 @@ public class LivrosRepositoryH2 implements LivrosRepository {
 	}
 
 	@Override
-	public boolean atualizarLivro(Livro livro) {
-		String sql = "UPDATE livros SET nome = ? WHERE id = ?";
-
-		try (Connection conn = DatabaseConnectionH2.getConnection();
-				PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setString(1, livro.nome());
-			pstmt.setInt(3, livro.id());
-
-			return pstmt.executeUpdate() > 0;
-		} catch (SQLException e) {
-			throw new RuntimeException("Erro ao atualizar livro", e);
-		}
-	}
-
-	@Override
 	public List<Livro> listarLivros() {
 		List<Livro> livros = new ArrayList<>();
 		String sql = "SELECT * FROM livros";
