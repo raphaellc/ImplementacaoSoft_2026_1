@@ -74,4 +74,19 @@ public class LivrosRepositoryH2 implements LivrosRepository {
 
 		return Optional.empty();
 	}
+
+	@Override
+	public boolean removerLivro(int id) {
+		String sql = "DELETE FROM livros WHERE id = ?";
+
+		try (Connection conn = DatabaseConnectionH2.getConnection();
+				PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+			pstmt.setInt(1, id);
+			return pstmt.executeUpdate() > 0;
+
+		} catch (SQLException e) {
+			throw new RuntimeException("Erro ao remover livro", e);
+		}
+	}
 }

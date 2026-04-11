@@ -31,7 +31,9 @@ public class LivrosHandler implements HttpHandler {
 			exchange.getResponseHeaders().set("Access-Control-Allow-Origin", origin);
 		}
 
-		exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
+		exchange.getResponseHeaders().set(
+				"Access-Control-Allow-Methods",
+				"GET, POST, PUT, DELETE, OPTIONS");
 		exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type");
 
 		String method = exchange.getRequestMethod();
@@ -46,6 +48,8 @@ public class LivrosHandler implements HttpHandler {
 			handleGet(exchange);
 		} else if ("POST".equals(method)) {
 			handlePost(exchange);
+		} else if ("DELETE".equals(method)) {
+			handleDelete(exchange, path);
 		} else {
 			sendResponse(exchange, 405, "Método não permitido");
 		}
@@ -107,6 +111,36 @@ public class LivrosHandler implements HttpHandler {
 		} catch (Exception e) {
 			IO.println(e.getMessage());
 			sendResponse(exchange, 500, "Erro interno ao criar livro");
+		}
+	}
+
+	private void handleDelete(HttpExchange exchange, String path) throws IOException {
+		String[] parts = path.split("/");
+
+		if (parts.length < 4) {
+			sendResponse(exchange, 400, "Informe o ID: DELETE /api/livros/{id}");
+			return;
+		}
+
+		int id;
+
+		try {
+			id = Integer.parseInt(parts[parts.length - 1]);
+		} catch (NumberFormatException e) {
+			sendResponse(exchange, 400, "ID inválido");
+			return;
+		}
+
+		try {
+			boolean removido = service.removerLivro(id);
+
+			if (!removido) {
+				sendResponse(exchange, 404, "Livro não encontrado");
+			} else {
+				sendResponse(exchange, 200, "Livro removido com sucesso");
+			}
+		} catch (Exception e) {
+			sendResponse(exchange, 500, "Erro ao remover livro");
 		}
 	}
 

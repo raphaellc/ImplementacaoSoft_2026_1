@@ -7,4 +7,6 @@ public interface LivrosService {
 	void adicionarLivro(String nome);
 
 	List<Livro> listarLivros();
+
+	boolean removerLivro(int id);
 }

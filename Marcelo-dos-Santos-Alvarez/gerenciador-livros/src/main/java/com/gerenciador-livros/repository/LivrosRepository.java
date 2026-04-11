@@ -10,4 +10,6 @@ public interface LivrosRepository {
 	List<Livro> listarLivros();
 
 	Optional<Livro> buscarPorId(int id);
+
+	boolean removerLivro(int id);
 }

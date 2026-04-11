@@ -29,4 +29,9 @@ public class LivrosServiceImpl implements LivrosService {
 	public List<Livro> listarLivros() {
 		return repository.listarLivros();
 	}
+
+	@Override
+	public boolean removerLivro(int id) {
+		return repository.removerLivro(id);
+	}
 }
