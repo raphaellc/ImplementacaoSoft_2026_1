@@ -19,6 +19,9 @@
 *.tar.gz
 *.rar
 
+# Maven build directory
+target/
+
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
@@ -31,13 +34,10 @@ replay_pid*
 !.vscode/extensions.json
 .history/
 
-
 # VS Code local workspace
 *.code-workspace
-
 
 # Windows
 Thumbs.db
 ehthumbs.db
 Desktop.ini
-
