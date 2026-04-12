@@ -13,9 +13,10 @@ public class LivroServiceImpl implements LivroService{
 
     @Override
     public void adicionar(String descricao){
-        if(descricao != null && !descricao.isBlank()){
-            repository.adicionar(descricao);
+        if(descricao == null || descricao.isBlank()){
+            throw new IllegalArgumentException("A descrição não pode estar vazia");
         }
+        repository.adicionar(descricao);
     }
 
     @Override
@@ -24,8 +25,13 @@ public class LivroServiceImpl implements LivroService{
     }
 
     @Override 
-     public void lerLivro(int id){
-        lerLivro(id);
+    public void lerLivro(int id){
+    Optional<Livro> livroOpt = repository.buscarPorID(id);
+        if(livroOpt.isPresent()){
+            Livro livro = livroOpt.get();
+            Livro livroAtualizado = new Livro(livro.id(), livro.titulo(), true);
+            repository.atualizar(livroAtualizado);
+        }
     }
    
 }
