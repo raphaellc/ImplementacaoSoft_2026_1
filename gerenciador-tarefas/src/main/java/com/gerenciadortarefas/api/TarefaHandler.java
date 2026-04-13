@@ -2,10 +2,12 @@ package com.gerenciadortarefas.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.gerenciadortarefas.service.TarefaService;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -24,11 +26,19 @@ public class TarefaHandler implements HttpHandler {
         this.service = service;
     }
 
+    // Falha 3 corrigida: adiciona headers de segurança em todas as respostas
+    private void addSecurityHeaders(HttpExchange exchange) {
+        exchange.getResponseHeaders().add("X-Content-Type-Options", "nosniff");
+        exchange.getResponseHeaders().add("X-Frame-Options", "DENY");
+        exchange.getResponseHeaders().add("Content-Security-Policy", "default-src 'self'");
+    }
+
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         exchange.getResponseHeaders().add("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
         exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
         exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+        addSecurityHeaders(exchange);
 
         String method = exchange.getRequestMethod();
         String path = exchange.getRequestURI().getPath(); // ex: /api/tarefas ou /api/tarefas/3
@@ -129,22 +139,31 @@ public class TarefaHandler implements HttpHandler {
         }
     }
 
+    // Falha 2 corrigida: lê em loop para garantir que o limite seja sempre respeitado,
+    // independentemente de fragmentação TCP.
     private String readBody(HttpExchange exchange) throws IOException {
-        try (InputStream is = exchange.getRequestBody()) {
-            byte[] buffer = new byte[MAX_BODY_BYTES + 1];
-            int bytesRead = is.read(buffer);
-            if (bytesRead > MAX_BODY_BYTES) {
-                return null; // payload muito grande
+        try (InputStream is = exchange.getRequestBody();
+             ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
+            byte[] chunk = new byte[512];
+            int bytesRead;
+            int totalRead = 0;
+            while ((bytesRead = is.read(chunk)) != -1) {
+                totalRead += bytesRead;
+                if (totalRead > MAX_BODY_BYTES) {
+                    return null; // payload muito grande
+                }
+                buffer.write(chunk, 0, bytesRead);
             }
-            if (bytesRead <= 0) {
-                return "";
-            }
-            return new String(buffer, 0, bytesRead, StandardCharsets.UTF_8);
+            return buffer.toString(StandardCharsets.UTF_8);
         }
     }
 
+    // Falha 1 corrigida: usa ObjectMapper para serializar a mensagem com escape correto,
+    // eliminando o risco de injeção de JSON por caracteres especiais (aspas, barras, etc).
     private void sendResponse(HttpExchange exchange, int status, String message) throws IOException {
-        byte[] body = ("{\"mensagem\":\"" + message + "\"}").getBytes(StandardCharsets.UTF_8);
+        ObjectNode node = objectMapper.createObjectNode();
+        node.put("mensagem", message);
+        byte[] body = objectMapper.writeValueAsBytes(node);
         exchange.getResponseHeaders().set("Content-Type", "application/json");
         exchange.sendResponseHeaders(status, body.length);
         try (OutputStream os = exchange.getResponseBody()) {

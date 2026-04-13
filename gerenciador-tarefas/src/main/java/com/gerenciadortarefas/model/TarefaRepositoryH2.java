@@ -72,12 +72,14 @@ public class TarefaRepositoryH2 implements TarefaRepository {
     @Override
     public Optional<Tarefa> buscarPorId(int id) {
         String sql = "SELECT * FROM tarefas WHERE id = ?";
+        // Falha 4 corrigida: ResultSet incluído no try-with-resources para garantir fechamento explícito
         try (Connection conn = DatabaseConnectionH2.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, id);
-            ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                return Optional.of(new Tarefa(rs.getInt("id"), rs.getString("descricao"), rs.getBoolean("concluida")));
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(new Tarefa(rs.getInt("id"), rs.getString("descricao"), rs.getBoolean("concluida")));
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao buscar tarefa", e);

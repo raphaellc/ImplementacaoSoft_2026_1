@@ -2,9 +2,11 @@ package com.gerenciadortarefas;
 
 import com.gerenciadortarefas.model.TarefaRepository;
 import com.gerenciadortarefas.model.TarefaRepositoryH2;
+import com.gerenciadortarefas.util.EnvLoader;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.concurrent.Executors;
 
 import com.gerenciadortarefas.api.StaticHandler;
 import com.gerenciadortarefas.api.TarefaHandler;
@@ -14,9 +16,11 @@ import com.gerenciadortarefas.service.TarefaServiceImpl;
 
 public class GerenciadorTarefas {
     public static void main(String[] args) {
+        EnvLoader.load(); // deve ser a primeira linha — carrega o .env antes de qualquer conexão
        //TarefaView view = new TarefaView();
         TarefaRepository repositoryH2 = new TarefaRepositoryH2();
         TarefaRepository repository = repositoryH2;
+        
         TarefaService service = new TarefaServiceImpl(repository);
        
         /* 
@@ -35,7 +39,8 @@ public class GerenciadorTarefas {
         server.createContext("/api/tarefas", new TarefaHandler(service));
         server.createContext("/", new StaticHandler());
 
-        server.setExecutor(null);
+        // Falha 5 corrigida: limita a 10 threads simultâneas para evitar esgotamento de memória
+        server.setExecutor(Executors.newFixedThreadPool(10));
         server.start();
         System.out.println("API rodando em http://localhost:8080/api/tarefas");
         System.out.println("Frontend disponível em http://localhost:8080/");
