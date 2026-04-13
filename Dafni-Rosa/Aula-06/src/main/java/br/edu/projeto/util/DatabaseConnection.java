@@ -5,14 +5,14 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConnection {
-    // Incompleto ainda 
 
+    private static final String URL  = System.getenv().getOrDefault("DB_URL",  "jdbc:mysql://localhost:3306/gerenciador_livro");
+    private static final String USER = System.getenv().getOrDefault("DB_USER", "root");
+    private static final String PASS = System.getenv().getOrDefault("DB_PASS", "");
 
-    private static final String URL = "jdbc:mysql://localhost:3306/gerenciador_livros";
-    private static final String USER = "root";
-    private static final String PASSWORD = "";
+    private DatabaseConnection() {}
 
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+        return DriverManager.getConnection(URL, USER, PASS);
     }
 }

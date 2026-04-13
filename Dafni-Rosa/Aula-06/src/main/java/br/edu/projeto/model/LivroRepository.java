@@ -1,117 +1,15 @@
 package br.edu.projeto.model;
-
-import br.edu.projeto.util.DatabaseConnection;
-
-import java.sql.*;
-import java.util.ArrayList;
+import br.edu.projeto.model.Livro;
 import java.util.List;
 import java.util.Optional;
 
-public class LivroRepository {
-
-
-    public int addBook(String titulo, String autor) {
-        String sql = "INSERT INTO livros (titulo, autor, disponivel) VALUES (?, ?, ?)";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            pstmt.setString(1, titulo);
-            pstmt.setString(2, autor);
-            pstmt.setBoolean(3, true);
-            pstmt.executeUpdate();
-
-            ResultSet generatedKeys = pstmt.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                return generatedKeys.getInt(1);
-            }
-        } catch (SQLException e) {
-            System.out.println("Erro ao adicionar livro no banco de dados: " + e.getMessage());
-        }
-        return -1;
-    }
-
-    /**
-     * Atualiza os dados de um livro existente.
-     * Retorna true se a atualização foi bem-sucedida, false caso contrário.
-     */
-    public boolean updateBook(Livro livroAtualizado) {
-        if (livroAtualizado == null) return false;
-        String sql = "UPDATE livros SET titulo = ?, autor = ?, disponivel = ? WHERE id = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, livroAtualizado.titulo());
-            pstmt.setString(2, livroAtualizado.autor());
-            pstmt.setBoolean(3, livroAtualizado.disponivel());
-            pstmt.setInt(4, livroAtualizado.id());
-            int affectedRows = pstmt.executeUpdate();
-            return affectedRows > 0;
-        } catch (SQLException e) {
-            System.out.println("Erro ao atualizar livro no banco de dados: " + e.getMessage());
-            return false;
-        }
-    }
-
-    /**
-     * Remove um livro pelo ID.
-     * Retorna true se a remoção foi bem-sucedida, false caso contrário.
-     */
-    public boolean deleteBook(int id) {
-        String sql = "DELETE FROM livros WHERE id = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, id);
-            int affectedRows = pstmt.executeUpdate();
-            return affectedRows > 0;
-        } catch (SQLException e) {
-            System.out.println("Erro ao remover livro do banco de dados: " + e.getMessage());
-            return false;
-        }
-    }
-
-    /**
-     * Retorna todos os livros cadastrados.
-     */
-    public List<Livro> listBooks() {
-        List<Livro> livros = new ArrayList<>();
-        String sql = "SELECT id, titulo, autor, disponivel FROM livros";
-        try (Connection conn = DatabaseConnection.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-            while (rs.next()) {
-                livros.add(mapRowToLivro(rs));
-            }
-        } catch (SQLException e) {
-            System.out.println("Erro ao listar livros do banco de dados: " + e.getMessage());
-        }
-        return livros;
-    }
-
-    /**
-     * Busca um livro pelo ID.
-     * Retorna Optional.empty() se não encontrado.
-     */
-    public Optional<Livro> findById(int id) {
-        String sql = "SELECT id, titulo, autor, disponivel FROM livros WHERE id = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, id);
-            ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                return Optional.of(mapRowToLivro(rs));
-            }
-        } catch (SQLException e) {
-            System.out.println("Erro ao buscar livro por ID no banco de dados: " + e.getMessage());
-        }
-        return Optional.empty();
-    }
-
-    /**
-     * Método auxiliar: mapeia uma linha do ResultSet para um objeto Livro.
-     */
-    private Livro mapRowToLivro(ResultSet rs) throws SQLException {
-        int id = rs.getInt("id");
-        String titulo = rs.getString("titulo");
-        String autor = rs.getString("autor");
-        boolean disponivel = rs.getBoolean("disponivel");
-        return new Livro(id, titulo, autor, disponivel);
-    }
+/**
+ * Contrato de acesso a dados para Livro.
+ */
+public interface LivroRepository {
+    int adicionarLivro(String titulo, String autor, String isbn);
+    boolean atualizarLivro(Livro livroAtualizado);
+    boolean removerLivro(int id);
+    List<Livro> listarLivros();
+    Optional<Livro> buscarPorId(int id);
 }
