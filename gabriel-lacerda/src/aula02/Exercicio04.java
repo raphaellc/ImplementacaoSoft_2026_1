@@ -1,4 +1,6 @@
- import java.util.Random;
+package aula02;
+
+import java.util.Random;
 
  public class Exercicio04 {
      public static void main(String[] args) {

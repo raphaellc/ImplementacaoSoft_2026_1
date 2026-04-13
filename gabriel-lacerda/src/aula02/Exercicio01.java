@@ -1,3 +1,5 @@
+package aula02;
+
 import java.util.Random;
 import java.util.Scanner;
 

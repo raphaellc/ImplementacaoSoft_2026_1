@@ -1,3 +1,5 @@
+package aula02;
+
 public class Exercicio02 {
 
     static class Produto {
