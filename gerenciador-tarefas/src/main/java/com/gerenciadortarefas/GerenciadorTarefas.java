@@ -6,6 +6,7 @@ import com.gerenciadortarefas.model.TarefaRepositoryH2;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
+import com.gerenciadortarefas.api.StaticHandler;
 import com.gerenciadortarefas.api.TarefaHandler;
 import com.sun.net.httpserver.HttpServer;
 import com.gerenciadortarefas.service.TarefaService;
@@ -32,10 +33,12 @@ public class GerenciadorTarefas {
             return;
         }
         server.createContext("/api/tarefas", new TarefaHandler(service));
-    
-        server.setExecutor(null); 
+        server.createContext("/", new StaticHandler());
+
+        server.setExecutor(null);
         server.start();
         System.out.println("API rodando em http://localhost:8080/api/tarefas");
+        System.out.println("Frontend disponível em http://localhost:8080/");
     }
 
 }
