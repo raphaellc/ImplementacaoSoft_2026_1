@@ -1,36 +1,31 @@
 package TarefaAula5;
-import TarefaAula5.LivroView;
-import TarefaAula5.LivroRepository;
-import TarefaAula5.Livro;
 
 public class LivroController {
-    private LivroRepository repository;
-    private LivroView view;
+    private final LivroRepository repository;
+    private final LivroView view;
     private boolean executando;
 
     public LivroController(LivroRepository repository, LivroView view) {
         this.repository = repository;
         this.view = view;
         this.executando = true;
-
     }
 
     public void iniciar() {
-
         while (executando) {
             String opcao = view.menu();
-
             switch (opcao) {
-                case "1" -> AdicionarLivro();
-                case "2" -> marcarComoAlugado();
-                case "3" -> listarLivros();
-                case "4" -> Sair();
-
+                case "1" -> adicionarLivro();
+                case "2" -> alugarLivro();
+                case "3" -> devolverLivro();
+                case "4" -> listarLivros();
+                case "5" -> sair();
+                default -> view.exibirMensagem("Opção inválida!");
             }
         }
     }
 
-    private void AdicionarLivro() {
+    private void adicionarLivro() {
         String titulo = view.capturarTitulo();
         if (!titulo.isBlank()) {
             repository.AdicionarLivro(titulo);
@@ -40,26 +35,38 @@ public class LivroController {
         }
     }
 
-    private void listarLivros() {
-        view.exibirLivros(repository.listarLivros());
-    }
-
-    private void marcarComoAlugado() {
-        int id = view.capturarId();
+    private void alugarLivro() {
+        int id = view.capturarId("alugar");
         if (id == -1) {
             view.exibirMensagem("ID inválido. Por favor, digite um número inteiro.");
             return;
         }
-
-        boolean sucesso = repository.marcarComoAlugado(id);
-        if (sucesso) {
-            view.exibirMensagem("Livro atualizado e marcado como lido!");
+        if (repository.marcarComoAlugado(id)) {
+            view.exibirMensagem("Livro alugado com sucesso!");
         } else {
-            view.exibirMensagem("Erro: Nenhum livro encontrado com o ID fornecido.");
+            view.exibirMensagem("Erro: Livro não encontrado ou já está alugado.");
         }
-
     }
-    public void Sair() {
-        executando = false;
+
+    private void devolverLivro() {
+        int id = view.capturarId("devolver");
+        if (id == -1) {
+            view.exibirMensagem("ID inválido. Por favor, digite um número inteiro.");
+            return;
+        }
+        if (repository.marcarComoDisponivel(id)) {
+            view.exibirMensagem("Livro devolvido com sucesso!");
+        } else {
+            view.exibirMensagem("Erro: Livro não encontrado ou já está na biblioteca.");
+        }
+    }
+
+    private void listarLivros() {
+        view.exibirLivros(repository.listarLivros());
+    }
+
+    private void sair() {
+        this.executando = false;
+        view.exibirMensagem("Sistema encerrado.");
     }
 }
