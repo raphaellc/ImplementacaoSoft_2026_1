@@ -27,13 +27,19 @@ public class TarefaRepositoryH2 implements TarefaRepository {
     }
 
     @Override
-    public void adicionarTarefa(String descricao) {
+    public Tarefa adicionarTarefa(String descricao) {
         String sql = "INSERT INTO tarefas (descricao, concluida) VALUES (?, ?)";
         try (Connection conn = DatabaseConnectionH2.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, descricao);
             pstmt.setBoolean(2, false);
             pstmt.executeUpdate();
+            try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return new Tarefa(rs.getInt(1), descricao, false);
+                }
+            }
+            throw new RuntimeException("Erro ao obter ID gerado para a tarefa");
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao adicionar tarefa", e);
         }

@@ -9,15 +9,20 @@ import java.util.Optional;
 
 public class TarefaRepositoryMySQL implements TarefaRepository{
 
-    public void adicionarTarefa(String descricao){
+    public Tarefa adicionarTarefa(String descricao){
         String sql = "INSERT INTO gerenciador_tarefa.tarefas (descricao, concluida) VALUES (?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, descricao);
             pstmt.setBoolean(2, false);
             pstmt.executeUpdate();
+            try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return new Tarefa(rs.getInt(1), descricao, false);
+                }
+            }
+            throw new RuntimeException("Erro ao obter ID gerado para a tarefa");
         } catch (SQLException e) {
-            // Corrigido: relança como RuntimeException em vez de engolir silenciosamente com println
             throw new RuntimeException("Erro ao adicionar tarefa", e);
         }
     }

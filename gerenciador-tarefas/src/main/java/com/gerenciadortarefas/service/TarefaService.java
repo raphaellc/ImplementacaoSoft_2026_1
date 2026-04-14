@@ -3,9 +3,10 @@ package com.gerenciadortarefas.service;
 
 import com.gerenciadortarefas.model.Tarefa;
 import java.util.List;
+import java.util.Optional;
 
 public interface TarefaService {
-    void adicionarTarefa(String descricao);
+    Tarefa adicionarTarefa(String descricao);
     List<Tarefa> listarTarefas();
-    String marcarTarefaConcluida(int id);
+    Optional<Tarefa> marcarTarefaConcluida(int id);
 }

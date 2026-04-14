@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TarefaRepository {
-    void adicionarTarefa(String descricao);
+    Tarefa adicionarTarefa(String descricao);
     boolean atualizarTarefa(Tarefa tarefaAtualizada);
     List<Tarefa> listarTarefas();
     Optional<Tarefa> buscarPorId(int id);

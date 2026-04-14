@@ -13,14 +13,14 @@ public class TarefaServiceImpl implements TarefaService {
     }
 
     @Override
-    public void adicionarTarefa(String descricao) {
+    public Tarefa adicionarTarefa(String descricao) {
         if (descricao == null || descricao.isBlank()) {
             throw new IllegalArgumentException("A descrição não pode ser vazia");
         }
         if (descricao.length() > 255) {
             throw new IllegalArgumentException("A descrição deve ter no máximo 255 caracteres");
         }
-        repository.adicionarTarefa(descricao.trim());
+        return repository.adicionarTarefa(descricao.trim());
     }
 
     @Override
@@ -29,16 +29,14 @@ public class TarefaServiceImpl implements TarefaService {
     }
 
     @Override
-    public String marcarTarefaConcluida(int id) {
+    public Optional<Tarefa> marcarTarefaConcluida(int id) {
         Optional<Tarefa> tarefaOptional = repository.buscarPorId(id);
         if (tarefaOptional.isPresent()) {
-            Tarefa tarefa = tarefaOptional.get();
-            Tarefa tarefaModificada = tarefa.comConcluida(true);
+            Tarefa tarefaModificada = tarefaOptional.get().comConcluida(true);
             if (repository.atualizarTarefa(tarefaModificada)) {
-                return "Tarefa " + id + " marcada como concluída.";
+                return Optional.of(tarefaModificada);
             }
-            return "Erro ao atualizar a tarefa.";
         }
-        return "Tarefa com ID " + id + " não encontrada.";
+        return Optional.empty();
     }
 }

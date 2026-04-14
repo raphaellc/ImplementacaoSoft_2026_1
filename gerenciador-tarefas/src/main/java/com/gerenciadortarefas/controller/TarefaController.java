@@ -1,6 +1,7 @@
 package com.gerenciadortarefas.controller;
 
 import java.util.List;
+import java.util.Optional;
 import com.gerenciadortarefas.service.*;
 import com.gerenciadortarefas.model.*;
 import com.gerenciadortarefas.view.*;
@@ -56,8 +57,11 @@ public class TarefaController {
     
     public void marcarTarefaConcluida() {
         int id = tarefa_view.marcarTarefaConcluida();
-        String mensagem = tarefa_service.marcarTarefaConcluida(id);
-        tarefa_view.exibirMensagem(mensagem);
-
+        Optional<Tarefa> resultado = tarefa_service.marcarTarefaConcluida(id);
+        if (resultado.isPresent()) {
+            tarefa_view.exibirMensagem("Tarefa " + id + " marcada como concluída.");
+        } else {
+            tarefa_view.exibirMensagem("Tarefa com ID " + id + " não encontrada.");
+        }
     }
 }

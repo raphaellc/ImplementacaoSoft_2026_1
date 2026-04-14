@@ -17,7 +17,7 @@ public class TarefaHandler implements HttpHandler {
 
     private static final int MAX_BODY_BYTES = 1024; // 1 KB
     private static final String ALLOWED_ORIGIN =
-            System.getenv().getOrDefault("CORS_ORIGIN", "http://localhost:3000");
+            System.getenv().getOrDefault("CORS_ORIGIN", "http://localhost:8080");
 
     private final TarefaService service;
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -100,8 +100,13 @@ public class TarefaHandler implements HttpHandler {
         }
 
         try {
-            service.adicionarTarefa(descricao);
-            sendResponse(exchange, 201, "Tarefa criada com sucesso");
+            var tarefaCriada = service.adicionarTarefa(descricao);
+            byte[] response = objectMapper.writeValueAsBytes(tarefaCriada);
+            exchange.getResponseHeaders().set("Content-Type", "application/json");
+            exchange.sendResponseHeaders(201, response.length);
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(response);
+            }
         } catch (IllegalArgumentException e) {
             sendResponse(exchange, 400, e.getMessage());
         } catch (Exception e) {
@@ -126,13 +131,16 @@ public class TarefaHandler implements HttpHandler {
         }
 
         try {
-            String resultado = service.marcarTarefaConcluida(id);
-            if (resultado.contains("não encontrada")) {
-                sendResponse(exchange, 404, resultado);
-            } else if (resultado.contains("Erro")) {
-                sendResponse(exchange, 500, "Erro interno ao atualizar tarefa");
-            } else {
-                sendResponse(exchange, 200, resultado);
+            var tarefaAtualizada = service.marcarTarefaConcluida(id);
+            if (tarefaAtualizada.isEmpty()) {
+                sendResponse(exchange, 404, "Tarefa com ID " + id + " não encontrada");
+                return;
+            }
+            byte[] response = objectMapper.writeValueAsBytes(tarefaAtualizada.get());
+            exchange.getResponseHeaders().set("Content-Type", "application/json");
+            exchange.sendResponseHeaders(200, response.length);
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(response);
             }
         } catch (Exception e) {
             sendResponse(exchange, 500, "Erro interno ao atualizar tarefa");
