@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gerenciador de Livros</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --pink-50:  #fff0f5;
+      --pink-100: #ffd6e7;
+      --pink-200: #ffb3d0;
+      --pink-400: #f472a8;
+      --pink-600: #c4477e;
+      --white:    #ffffff;
+      --gray-50:  #fafafa;
+      --gray-100: #f4f4f4;
+      --gray-300: #d1d1d1;
+      --gray-500: #8f8f8f;
+      --gray-700: #444;
+      --ink:      #1a1a1a;
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 22px;
+    }
+    body { background: var(--gray-50); font-family: 'DM Sans', sans-serif; color: var(--ink); min-height: 100vh; }
+    header { background: var(--white); border-bottom: 1px solid var(--pink-100); padding: 1.4rem 2rem; display: flex; align-items: center; gap: 1rem; }
+    .header-icon { width: 40px; height: 40px; background: var(--pink-50); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    header h1 { font-family: 'DM Serif Display', serif; font-size: 1.4rem; font-weight: 400; color: var(--ink); }
+    header p { font-size: .8rem; color: var(--gray-500); margin-top: .1rem; }
+    main { max-width: 720px; margin: 2rem auto; padding: 0 1.25rem; display: flex; flex-direction: column; gap: 1.25rem; }
+    .card { background: var(--white); border: 1px solid var(--pink-100); border-radius: var(--radius-lg); padding: 1.5rem; }
+    .card-title { font-size: .7rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--pink-600); margin-bottom: 1rem; }
+    .form-row { display: flex; gap: .75rem; flex-wrap: wrap; }
+    .form-group { display: flex; flex-direction: column; gap: .4rem; flex: 1; min-width: 150px; }
+    label { font-size: .75rem; font-weight: 500; color: var(--gray-500); }
+    input[type="text"] { border: 1px solid var(--gray-300); border-radius: var(--radius-sm); padding: .6rem .9rem; font-family: 'DM Sans', sans-serif; font-size: .92rem; color: var(--ink); background: var(--white); transition: border-color .2s, box-shadow .2s; width: 100%; }
+    input[type="text"]:focus { outline: none; border-color: var(--pink-400); box-shadow: 0 0 0 3px var(--pink-50); }
+    input[type="text"]::placeholder { color: var(--gray-300); }
+    .btn-add { background: var(--pink-400); color: var(--white); border: none; border-radius: var(--radius-sm); padding: .65rem 1.3rem; font-family: 'DM Sans', sans-serif; font-size: .85rem; font-weight: 500; cursor: pointer; transition: background .2s, transform .1s; align-self: flex-end; white-space: nowrap; }
+    .btn-add:hover { background: var(--pink-600); }
+    .btn-add:active { transform: scale(.97); }
+    .erro { font-size: .8rem; color: #c0392b; margin-top: .6rem; display: none; }
+    .stats { display: flex; gap: .75rem; }
+    .stat { flex: 1; background: var(--pink-50); border-radius: var(--radius-md); padding: .9rem 1rem; text-align: center; }
+    .stat-num { font-family: 'DM Serif Display', serif; font-size: 1.8rem; color: var(--pink-600); line-height: 1; }
+    .stat-label { font-size: .72rem; color: var(--gray-500); margin-top: .3rem; }
+    .filtros { display: flex; gap: .5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .filtro-btn { background: var(--gray-100); border: 1px solid transparent; border-radius: 20px; padding: .3rem .9rem; font-size: .8rem; font-family: 'DM Sans', sans-serif; color: var(--gray-500); cursor: pointer; transition: all .2s; }
+    .filtro-btn.ativo { background: var(--pink-50); border-color: var(--pink-200); color: var(--pink-600); font-weight: 500; }
+    .filtro-btn:hover:not(.ativo) { background: var(--gray-100); border-color: var(--gray-300); color: var(--gray-700); }
+    #lista-livros { list-style: none; }
+    .livro-item { display: flex; align-items: center; gap: .9rem; padding: .85rem 0; border-bottom: 1px solid var(--gray-100); animation: fadeIn .25s ease; }
+    .livro-item:last-child { border-bottom: none; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    .livro-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--pink-200); flex-shrink: 0; }
+    .livro-item.lido .livro-dot { background: #b8e0b8; }
+    .livro-info { flex: 1; min-width: 0; }
+    .livro-titulo { font-size: .95rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .livro-item.lido .livro-titulo { text-decoration: line-through; color: var(--gray-500); font-weight: 400; }
+    .livro-autor { font-size: .78rem; color: var(--gray-500); margin-top: .1rem; }
+    .badge { padding: .2rem .65rem; border-radius: 20px; font-size: .7rem; font-weight: 500; flex-shrink: 0; }
+    .badge-pendente { background: var(--pink-50); color: var(--pink-600); }
+    .badge-lido { background: #eaf5ea; color: #3a7d3a; }
+    .btn-lido { background: transparent; border: 1px solid var(--gray-300); border-radius: var(--radius-sm); padding: .28rem .7rem; font-size: .75rem; font-family: 'DM Sans', sans-serif; color: var(--gray-500); cursor: pointer; transition: all .2s; flex-shrink: 0; }
+    .btn-lido:hover { background: #eaf5ea; border-color: #b8e0b8; color: #3a7d3a; }
+    .livro-item.lido .btn-lido { display: none; }
+    .estado-vazio { text-align: center; padding: 2.5rem 0; color: var(--gray-500); font-size: .9rem; }
+    #toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--ink); color: #fff; padding: .65rem 1.1rem; border-radius: var(--radius-sm); font-size: .84rem; font-family: 'DM Sans', sans-serif; transform: translateY(60px); opacity: 0; transition: all .3s ease; pointer-events: none; z-index: 999; }
+    #toast.show { transform: translateY(0); opacity: 1; }
+  </style>
+</head>
+<body>
+<header>
+  <div class="header-icon">📚</div>
+  <div>
+    <h1>Minha Estante</h1>
+    <p>Organize sua lista de leitura</p>
+  </div>
+</header>
+<main>
+  <div class="stats">
+    <div class="stat"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Total</div></div>
+    <div class="stat"><div class="stat-num" id="stat-lidos">0</div><div class="stat-label">Lidos</div></div>
+    <div class="stat"><div class="stat-num" id="stat-pendentes">0</div><div class="stat-label">Pendentes</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Adicionar livro</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="titulo">Título</label>
+        <input type="text" id="titulo" placeholder="Dom Casmurro" maxlength="255" />
+      </div>
+      <div class="form-group">
+        <label for="autor">Autor</label>
+        <input type="text" id="autor" placeholder="Machado de Assis" maxlength="255" />
+      </div>
+      <button class="btn-add" onclick="adicionarLivro()">Adicionar</button>
+    </div>
+    <p class="erro" id="erro-form"></p>
+  </div>
+  <div class="card">
+    <div class="card-title">Livros</div>
+    <div class="filtros">
+      <button class="filtro-btn ativo" onclick="setFiltro('todos', this)">Todos</button>
+      <button class="filtro-btn" onclick="setFiltro('pendentes', this)">Pendentes</button>
+      <button class="filtro-btn" onclick="setFiltro('lidos', this)">Lidos</button>
+    </div>
+    <ul id="lista-livros"></ul>
+  </div>
+</main>
+<div id="toast"></div>
+<script>
+  const API = 'http://localhost:8080/api/livros';
+  let todosLivros = [], filtroAtivo = 'todos';
+
+  async function carregarLivros() {
+    try {
+      const res = await fetch(API);
+      if (!res.ok) throw new Error();
+      todosLivros = await res.json();
+      renderizarLista();
+    } catch {
+      document.getElementById('lista-livros').innerHTML = '<li class="estado-vazio">Não foi possível conectar à API.</li>';
+    }
+  }
+
+  function renderizarLista() {
+    const ul = document.getElementById('lista-livros');
+    const livros = todosLivros.filter(l => filtroAtivo === 'lidos' ? l.lido : filtroAtivo === 'pendentes' ? !l.lido : true);
+    document.getElementById('stat-total').textContent = todosLivros.length;
+    document.getElementById('stat-lidos').textContent = todosLivros.filter(l => l.lido).length;
+    document.getElementById('stat-pendentes').textContent = todosLivros.filter(l => !l.lido).length;
+    if (livros.length === 0) { ul.innerHTML = '<li class="estado-vazio">Nenhum livro aqui ainda.</li>'; return; }
+    ul.innerHTML = '';
+    livros.forEach(l => {
+      const li = document.createElement('li');
+      li.className = 'livro-item' + (l.lido ? ' lido' : '');
+      li.innerHTML = `<div class="livro-dot"></div><div class="livro-info"><div class="livro-titulo">${esc(l.titulo)}</div><div class="livro-autor">${esc(l.autor)}</div></div><span class="badge ${l.lido ? 'badge-lido' : 'badge-pendente'}">${l.lido ? 'Lido' : 'Pendente'}</span><button class="btn-lido" onclick="marcarLido(${l.id})">Marcar lido</button>`;
+      ul.appendChild(li);
+    });
+  }
+
+  async function adicionarLivro() {
+    const titulo = document.getElementById('titulo').value.trim();
+    const autor  = document.getElementById('autor').value.trim();
+    const erroEl = document.getElementById('erro-form');
+    erroEl.style.display = 'none';
+    if (!titulo || !autor) { erroEl.textContent = 'Preencha o título e o autor.'; erroEl.style.display = 'block'; return; }
+    try {
+      const res = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ titulo, autor }) });
+      if (!res.ok) { const d = await res.json(); erroEl.textContent = d.mensagem || 'Erro ao adicionar.'; erroEl.style.display = 'block'; return; }
+      document.getElementById('titulo').value = '';
+      document.getElementById('autor').value  = '';
+      await carregarLivros();
+      toast('Livro adicionado!');
+    } catch { erroEl.textContent = 'Erro de conexão com a API.'; erroEl.style.display = 'block'; }
+  }
+
+  async function marcarLido(id) {
+    try { await fetch(`${API}/${id}`, { method: 'PUT' }); await carregarLivros(); toast('Marcado como lido!'); }
+    catch { toast('Erro ao atualizar.'); }
+  }
+
+  function setFiltro(f, btn) {
+    filtroAtivo = f;
+    document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('ativo'));
+    btn.classList.add('ativo');
+    renderizarLista();
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('autor').addEventListener('keydown', e => { if (e.key === 'Enter') adicionarLivro(); });
+    carregarLivros();
+  });
+</script>
+</body>
+</html>
