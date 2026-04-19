@@ -1,62 +1,43 @@
 package br.edu.projeto;
 
 import br.edu.projeto.api.LivroHandler;
-import br.edu.projeto.controller.LivroController;
+import br.edu.projeto.api.StaticHandler;
 import br.edu.projeto.model.LivroRepository;
-import br.edu.projeto.model.LivroRepositoryMySQL;
+import br.edu.projeto.model.LivroRepositoryH2;
 import br.edu.projeto.service.LivroService;
 import br.edu.projeto.service.LivroServiceImpl;
-import br.edu.projeto.view.LivroView;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
-/**
- * Ponto de entrada da aplicação.
- *
- * Uso:
- *   java -jar gerenciador-livros.jar          → modo console (padrão)
- *   java -jar gerenciador-livros.jar api      → modo API HTTP (porta 8080)
- */
 public class GerenciadorLivros {
 
     public static void main(String[] args) throws IOException {
+        // 1. Cria o repositório concreto (H2 em memória)
+        LivroRepository repository = new LivroRepositoryH2();
 
-        // Wiring: instancia as dependências manualmente (sem framework)
-        LivroRepository repository = new LivroRepositoryMySQL();
-        LivroService    service    = new LivroServiceImpl(repository);
+        // 2. Injeta repositório no serviço
+        LivroService service = new LivroServiceImpl(repository);
 
-        boolean modoApi = args.length > 0 && args[0].equalsIgnoreCase("api");
+        // 3. Cria servidor HTTP na porta 8080
+        HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
 
-        if (modoApi) {
-            iniciarModoApi(service);
-        } else {
-            iniciarModoConsole(service);
-        }
-    }
-
-    // -----------------------------------------------------------------------
-    // Modo console — igual ao GerenciadorTarefas original
-    // -----------------------------------------------------------------------
-    private static void iniciarModoConsole(LivroService service) {
-        LivroView       view       = new LivroView();
-        LivroController controller = new LivroController(view, service);
-        controller.iniciarGerenciadorLivros();
-    }
-
-    // -----------------------------------------------------------------------
-    // Modo API HTTP
-    // -----------------------------------------------------------------------
-    private static void iniciarModoApi(LivroService service) throws IOException {
-        int porta = Integer.parseInt(System.getenv().getOrDefault("API_PORT", "8080"));
-
-        HttpServer server = HttpServer.create(new InetSocketAddress(porta), 0);
+        // 4. Registra handlers
         server.createContext("/api/livros", new LivroHandler(service));
-        server.setExecutor(null); // usa o executor padrão
+        server.createContext("/", new StaticHandler());
+
+        // 5. Usa o executor padrão da JVM (thread por requisição)
+        server.setExecutor(null);
+
+        // 6. Inicia o servidor
         server.start();
 
-        System.out.println("API iniciada em http://localhost:" + porta + "/api/livros");
-        System.out.println("Pressione Ctrl+C para encerrar.");
+        System.out.println("╔════════════════════════════════════════╗");
+        System.out.println("║     Gerenciador de Livros iniciado!    ║");
+        System.out.println("╠════════════════════════════════════════╣");
+        System.out.println("║  Frontend : http://localhost:8080      ║");
+        System.out.println("║  API REST : http://localhost:8080/api/livros ║");
+        System.out.println("╚════════════════════════════════════════╝");
     }
 }

@@ -5,86 +5,54 @@ import br.edu.projeto.service.LivroService;
 import br.edu.projeto.view.LivroView;
 
 import java.util.List;
+import java.util.Optional;
 
-/**
- * Orquestra LivroView e LivroService.
- * Espelha a estrutura de TarefaController.
- */
 public class LivroController {
 
-    private final LivroView livroView;
-    private final LivroService livroService;
+    private final LivroView view;
+    private final LivroService service;
 
     public LivroController(LivroView view, LivroService service) {
-        this.livroView = view;
-        this.livroService = service;
+        this.view = view;
+        this.service = service;
     }
 
-    public void iniciarGerenciadorLivros() {
+    public void iniciarGerenciador() {
         int opcao;
         do {
-            opcao = livroView.montarMenu();
+            opcao = view.montarMenu();
             switch (opcao) {
                 case 1 -> adicionarLivro();
                 case 2 -> listarLivros();
-                case 3 -> atualizarLivro();
-                case 4 -> alterarDisponibilidade();
-                case 5 -> removerLivro();
-                case 0 -> livroView.exibirMensagem("Saindo do sistema.");
-                default -> livroView.exibirMensagem("Opção inválida. Tente novamente.");
+                case 3 -> marcarComoLido();
+                case 0 -> view.exibirMensagem("Até logo!");
+                default -> view.exibirMensagem("Opção inválida.");
             }
         } while (opcao != 0);
     }
 
-    public void adicionarLivro() {
-        String[] dados = livroView.solicitarDadosLivro();
+    private void adicionarLivro() {
+        String[] dados = view.adicionarLivro();
         try {
-            int idGerado = livroService.adicionarLivro(dados[0], dados[1], dados[2]);
-            if (idGerado > 0) {
-                livroView.exibirMensagem("Livro adicionado com sucesso! ID: " + idGerado);
-                listarLivros();
-            } else {
-                livroView.exibirMensagem("Erro ao adicionar o livro.");
-            }
+            service.adicionarLivro(dados[0], dados[1]);
+            listarLivros();
         } catch (IllegalArgumentException e) {
-            livroView.exibirMensagem("Erro de validação: " + e.getMessage());
+            view.exibirMensagem("Erro: " + e.getMessage());
         }
     }
 
-    public void listarLivros() {
-        List<Livro> livros = livroService.listarLivros();
-        livroView.listarLivros(livros);
+    private void listarLivros() {
+        List<Livro> livros = service.listarLivros();
+        view.listarLivros(livros);
     }
 
-    public void atualizarLivro() {
-        int id = livroView.solicitarId("atualizar");
-
-        // Buscar livro atual para exibir valores na View
-        livroService.listarLivros().stream()
-                .filter(l -> l.id() == id)
-                .findFirst()
-                .ifPresentOrElse(livroAtual -> {
-                    String[] alteracoes = livroView.solicitarAtualizacoes(livroAtual);
-                    boolean disponivel = alteracoes[3].equals("s");
-                    String mensagem = livroService.atualizarLivro(id, alteracoes[0], alteracoes[1], alteracoes[2], disponivel);
-                    livroView.exibirMensagem(mensagem);
-                    if (mensagem.contains("sucesso")) listarLivros();
-                }, () -> livroView.exibirMensagem("Livro com ID " + id + " não encontrado."));
-    }
-
-    public void alterarDisponibilidade() {
-        int id = livroView.solicitarId("alterar disponibilidade");
-        String resp = livroView.solicitarDisponibilidade();
-        boolean disponivel = resp.equals("s");
-        String mensagem = livroService.alterarDisponibilidade(id, disponivel);
-        livroView.exibirMensagem(mensagem);
-        if (mensagem.contains("marcado")) listarLivros();
-    }
-
-    public void removerLivro() {
-        int id = livroView.solicitarId("remover");
-        String mensagem = livroService.removerLivro(id);
-        livroView.exibirMensagem(mensagem);
-        if (mensagem.contains("sucesso")) listarLivros();
+    private void marcarComoLido() {
+        int id = view.marcarLivroComoLido();
+        Optional<Livro> resultado = service.marcarLivroComoLido(id);
+        if (resultado.isPresent()) {
+            view.exibirMensagem("Livro #" + id + " marcado como lido!");
+        } else {
+            view.exibirMensagem("Livro com ID " + id + " não encontrado.");
+        }
     }
 }
