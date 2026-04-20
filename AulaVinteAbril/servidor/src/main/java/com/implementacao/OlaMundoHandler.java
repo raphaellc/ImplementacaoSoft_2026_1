@@ -7,21 +7,24 @@ import java.nio.charset.StandardCharsets;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpExchange;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
+
 public class OlaMundoHandler implements HttpHandler {
     //Fazer o override do handler
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     @Override
     public void handle(HttpExchange exchange) throws IOException{
         //Configura a mensagem de resposta
-        String response = "Olá Mundo";
-        //pega o número de bytes da mensagem e configura para fazer o stream via rede
-        byte[] bytes = response.getBytes(StandardCharsets.UTF_8);
-        //Configura os headers
-        exchange.getResponseHeaders().set("Content-Type", "text/plain; charset=UTF-8");
-        //Envia os headers, ou prepara para o envio.
-        exchange.sendResponseHeaders(200, bytes.length);
-        //caso de certo envia.
+        ObjectNode node = objectMapper.createObjectNode();
+        node.put("mensagem", "Olá Mundo");
+        byte[] response = objectMapper.writeValueAsBytes(node);
+        exchange.getResponseHeaders().set("Content-Type", "application/json");
+        exchange.sendResponseHeaders(200, response.length);
         try (OutputStream os = exchange.getResponseBody()) {
-            os.write(bytes);
+            os.write(response);
         }
     }
 }
