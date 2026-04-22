@@ -1,6 +1,7 @@
-package Aula09.src.main.java.org.servidor.command;
+package org.servidor.command;
 
 import com.sun.net.httpserver.HttpExchange;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.servidor.command.Command;
@@ -17,35 +18,50 @@ public class OlaMundoPostCommand implements Command {
 
         String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
 
-        JsonNode node = mapper.readTree(body);
-        String nome = node.get("nome").asText();
-
-
-
-        String response = null;
+        String response;
         int status;
 
-        if(nome == null) {
-            response =  mapper.writeValueAsString(
-                    mapper.createObjectNode().put("mensagem", "Olá Mundo, " + nome)
+        JsonNode node;
+        try {
+            node = mapper.readTree(body);
+        } catch (JsonParseException e) {
+            response = mapper.writeValueAsString(
+                    mapper.createObjectNode().put("mensagem", "JSON inválido")
             );
-            status = 200;
+            sendResponse(exchange, 400, response);
+            return;
+        }
 
-        } else {
+        if (node == null || !node.has("nome") || node.get("nome").isNull()) {
             response = mapper.writeValueAsString(
                     mapper.createObjectNode().put("mensagem", "Campo 'nome' é obrigatório")
             );
-
-            status = 400;
+            sendResponse(exchange, 400, response);
+            return;
         }
 
+        String nome = node.get("nome").asText();
 
+        if (nome.isBlank()) {
+            response = mapper.writeValueAsString(
+                    mapper.createObjectNode().put("mensagem", "O nome não pode ser vazio")
+            );
+            sendResponse(exchange, 400, response);
+            return;
+        }
 
+        response = mapper.writeValueAsString(
+                mapper.createObjectNode().put("mensagem", "Olá Mundo, " + nome + "!")
+        );
+        sendResponse(exchange, 200, response);
+    }
+
+    private void sendResponse(HttpExchange exchange, int status, String response) throws IOException {
+        byte[] bytes = response.getBytes(StandardCharsets.UTF_8);
         exchange.getResponseHeaders().set("Content-Type", "application/json");
-        exchange.sendResponseHeaders(status, response.getBytes().length);
-
+        exchange.sendResponseHeaders(status, bytes.length);
         try (OutputStream os = exchange.getResponseBody()) {
-            os.write(response.getBytes(StandardCharsets.UTF_8));
+            os.write(bytes);
         }
     }
 }

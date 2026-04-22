@@ -1,10 +1,10 @@
-package Aula09.src.main.java.org.servidor.routes;
+package org.servidor.routes;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import Aula09.src.main.java.org.servidor.command.Command;
-import Aula09.src.main.java.org.servidor.command.OlaMundoGetCommand;
-import Aula09.src.main.java.org.servidor.command.OlaMundoPostCommand;
+import org.servidor.command.Command;
+import org.servidor.command.OlaMundoGetCommand;
+import org.servidor.command.OlaMundoPostCommand;
 
 import java.io.IOException;
 import java.util.HashMap;

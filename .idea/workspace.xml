@@ -5,9 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3a774ff6-f174-43a1-8ba7-42219af49063" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/ImplementacaoSoft_2026_1.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ImplementacaoSoft_2026_1.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula05/src/main/java/org/example/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula05/src/main/java/org/example/App.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula05/src/main/java/org/example/api/BookHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula05/src/main/java/org/example/api/BookHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula09/src/main/java/org/servidor/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula09/src/main/java/org/servidor/App.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula09/src/main/java/org/servidor/command/Command.java" beforeDir="false" afterPath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula09/src/main/java/org/servidor/command/Command.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula09/src/main/java/org/servidor/command/OlaMundoGetCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula09/src/main/java/org/servidor/command/OlaMundoGetCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula09/src/main/java/org/servidor/command/OlaMundoPostCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula09/src/main/java/org/servidor/command/OlaMundoPostCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula09/src/main/java/org/servidor/routes/RouterHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/ArturVillanovaVargas/src/Aula09/src/main/java/org/servidor/routes/RouterHandler.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

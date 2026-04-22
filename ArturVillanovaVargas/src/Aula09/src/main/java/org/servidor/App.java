@@ -1,4 +1,4 @@
-package Aula09.src.main.java.org.servidor;
+package org.servidor;
 
 import com.sun.net.httpserver.HttpServer;
 import org.servidor.routes.RouterHandler;

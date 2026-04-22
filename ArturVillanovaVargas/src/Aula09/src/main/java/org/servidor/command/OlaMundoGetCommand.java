@@ -1,4 +1,4 @@
-package Aula09.src.main.java.org.servidor.command;
+package org.servidor.command;
 
 import com.sun.net.httpserver.HttpExchange;
 import org.servidor.command.Command;
