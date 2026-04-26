@@ -21,7 +21,8 @@ public class LivroController {
                 case "1" -> service.adicionar(view.pedirTitulo());
                 case "2" -> view.exibirLivros(service.listarLivros());
                 case "3" -> service.lerLivro(view.pedirID());
-                case "4" -> rodando = false;
+                case "4" -> service.remover(view.pedirID());
+                case "5" -> rodando = false;
                 default -> System.out.println("Opção inválida!");
             }
         }

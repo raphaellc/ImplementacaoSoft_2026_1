@@ -8,4 +8,5 @@ public interface LivroService {
     void adicionar(String descricao);
     List<Livro> listarLivros();
     void lerLivro(int id);
+    void remover(int id);
 }

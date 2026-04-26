@@ -8,5 +8,6 @@ public interface LivroRepository {
     List<Livro> listarLivros();
     Optional<Livro> buscarPorID(int id);
     boolean atualizar(Livro livro); 
+    boolean remover(int id);
 } 
 

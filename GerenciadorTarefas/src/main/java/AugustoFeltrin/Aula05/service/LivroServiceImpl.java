@@ -33,5 +33,14 @@ public class LivroServiceImpl implements LivroService{
             repository.atualizar(livroAtualizado);
         }
     }
-   
+
+    @Override
+    public void remover(int id){
+        boolean removido = repository.remover(id);
+
+        if(!removido){
+            System.out.println("Livro não encontrado.");
+        }
+    }
+
 }

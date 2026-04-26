@@ -12,7 +12,8 @@ public class LivroView {
         System.out.println("1. Adicionar livro");
         System.out.println("2. Listar livros");
         System.out.println("3. Marcar livro como lido");
-        System.out.println("4. Sair");
+        System.out.println("4. Remover livro");
+        System.out.println("5. Sair");
         System.out.print("Escolha: ");
         return scan.nextLine();
     }
