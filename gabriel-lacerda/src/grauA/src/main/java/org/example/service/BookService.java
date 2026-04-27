@@ -1,7 +1,8 @@
-package aula06.src.main.java.org.example.service;
+package org.example.service;
 
-import aula06.src.main.java.org.example.model.Book;
-import aula06.src.main.java.org.example.repository.BookRepository;
+import org.example.model.Book;
+import org.example.repository.BookRepository;
+
 import java.util.Optional;
 
 public class BookService {
@@ -29,6 +30,11 @@ public class BookService {
             throw new Exception("O livro \"" + found.get().title() + "\" já está alugado.");
         }
 
-        repository.rentBook(id);
+        Book updated = new Book(found.get().id(), found.get().title(), false);
+        repository.update(updated);
+    }
+
+    public java.util.List<Book> getAllBooks() {
+        return repository.getAllBooks();
     }
 }

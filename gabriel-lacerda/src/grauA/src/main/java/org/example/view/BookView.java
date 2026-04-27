@@ -1,6 +1,7 @@
-package aula06.src.main.java.org.example.view;
+package org.example.view;
 
-import aula06.src.main.java.org.example.model.Book;
+import org.example.model.Book;
+
 import java.util.List;
 import java.util.Scanner;
 
@@ -43,4 +44,3 @@ public class BookView {
         System.out.println("Erro: " + message);
     }
 }
-

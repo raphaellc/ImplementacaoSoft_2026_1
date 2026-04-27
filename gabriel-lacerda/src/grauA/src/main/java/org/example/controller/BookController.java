@@ -1,8 +1,8 @@
-package aula06.src.main.java.org.example.controller;
+package org.example.controller;
 
-import aula06.src.main.java.org.example.repository.BookRepository;
-import aula06.src.main.java.org.example.view.BookView;
-import aula06.src.main.java.org.example.service.BookService;
+import org.example.repository.BookRepository;
+import org.example.service.BookService;
+import org.example.view.BookView;
 
 public class BookController {
     private final BookView view;
