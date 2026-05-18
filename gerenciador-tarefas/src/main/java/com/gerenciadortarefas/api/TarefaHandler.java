@@ -36,7 +36,7 @@ public class TarefaHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         exchange.getResponseHeaders().add("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
-        exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
+        exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
         addSecurityHeaders(exchange);
 
@@ -54,6 +54,8 @@ public class TarefaHandler implements HttpHandler {
             handlePost(exchange);
         } else if ("PUT".equals(method)) {
             handlePut(exchange, path);
+        } else if ("DELETE".equals(method)) {
+            handleDelete(exchange, path);
         } else {
             sendResponse(exchange, 405, "Método não permitido");
         }
@@ -130,8 +132,44 @@ public class TarefaHandler implements HttpHandler {
             return;
         }
 
+        String body = readBody(exchange);
+        if (body == null) {
+            sendResponse(exchange, 400, "Corpo da requisição muito grande ou ausente");
+            return;
+        }
+
+        String descricao = null;
+        Boolean concluida = null;
         try {
-            var tarefaAtualizada = service.marcarTarefaConcluida(id);
+            JsonNode node = objectMapper.readTree(body);
+            JsonNode campoDescricao = node.get("descricao");
+            JsonNode campoConcluida = node.get("concluida");
+            if (campoDescricao != null && !campoDescricao.isNull()) {
+                descricao = campoDescricao.asText().trim();
+                if (descricao.isBlank()) {
+                    sendResponse(exchange, 400, "A descrição não pode ser vazia");
+                    return;
+                }
+                if (descricao.length() > 255) {
+                    sendResponse(exchange, 400, "A descrição deve ter no máximo 255 caracteres");
+                    return;
+                }
+            }
+            if (campoConcluida != null && !campoConcluida.isNull()) {
+                concluida = campoConcluida.asBoolean();
+            }
+        } catch (Exception e) {
+            sendResponse(exchange, 400, "JSON inválido");
+            return;
+        }
+
+        if (descricao == null && concluida == null) {
+            sendResponse(exchange, 400, "Informe ao menos 'descricao' ou 'concluida' para atualizar");
+            return;
+        }
+
+        try {
+            var tarefaAtualizada = service.atualizarTarefa(id, descricao, concluida);
             if (tarefaAtualizada.isEmpty()) {
                 sendResponse(exchange, 404, "Tarefa com ID " + id + " não encontrada");
                 return;
@@ -144,6 +182,34 @@ public class TarefaHandler implements HttpHandler {
             }
         } catch (Exception e) {
             sendResponse(exchange, 500, "Erro interno ao atualizar tarefa");
+        }
+    }
+
+    private void handleDelete(HttpExchange exchange, String path) throws IOException {
+        // Espera: DELETE /api/tarefas/{id}
+        String[] parts = path.split("/");
+        if (parts.length < 4) {
+            sendResponse(exchange, 400, "Informe o ID da tarefa: DELETE /api/tarefas/{id}");
+            return;
+        }
+
+        int id;
+        try {
+            id = Integer.parseInt(parts[parts.length - 1]);
+        } catch (NumberFormatException e) {
+            sendResponse(exchange, 400, "ID inválido");
+            return;
+        }
+
+        try {
+            boolean removida = service.deletarTarefa(id);
+            if (!removida) {
+                sendResponse(exchange, 404, "Tarefa com ID " + id + " não encontrada");
+                return;
+            }
+            sendResponse(exchange, 200, "Tarefa com ID " + id + " removida com sucesso");
+        } catch (Exception e) {
+            sendResponse(exchange, 500, "Erro interno ao deletar tarefa");
         }
     }
 

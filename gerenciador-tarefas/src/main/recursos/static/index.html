@@ -7,23 +7,41 @@
     <style>
         body { font-family: sans-serif; margin: 20px; background-color: #f4f4f9; }
         h1 { color: #333; }
-        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        ul { list-style: none; padding: 0; }
-        li { padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+        .container { max-width: 640px; margin: auto; background: white; padding: 24px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+        /* Formulário de criação */
+        .form-nova-tarefa { display: flex; gap: 8px; margin-bottom: 8px; }
+        .form-nova-tarefa input { flex: 1; padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 1em; }
+        .mensagem-erro { color: red; font-size: 0.9em; margin-bottom: 16px; min-height: 1.2em; }
+
+        /* Lista */
+        ul { list-style: none; padding: 0; margin: 0; }
+        li { padding: 10px 6px; border-bottom: 1px solid #eee; }
         li:last-child { border-bottom: none; }
+
+        /* Linha de visualização */
+        .tarefa-view { display: flex; align-items: center; gap: 8px; }
+        .info-tarefa { flex: 1; }
         .concluida { text-decoration: line-through; color: #888; }
-        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8em; white-space: nowrap; }
+        .badge { padding: 3px 8px; border-radius: 4px; font-size: 0.78em; white-space: nowrap; }
         .status-ok { background: #d4edda; color: #155724; }
         .status-pendente { background: #fff3cd; color: #856404; }
-        .info-tarefa { flex: 1; }
-        button { cursor: pointer; padding: 5px 10px; background: #007bff; color: white; border: none; border-radius: 4px; }
-        button:hover { background: #0056b3; }
-        button.btn-concluir { background: #28a745; font-size: 0.85em; }
-        button.btn-concluir:hover { background: #1e7e34; }
-        .form-nova-tarefa { display: flex; gap: 8px; margin-bottom: 20px; }
-        .form-nova-tarefa input { flex: 1; padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 1em; }
-        .form-nova-tarefa button { white-space: nowrap; }
-        .mensagem-erro { color: red; font-size: 0.9em; margin-bottom: 8px; min-height: 1.2em; }
+
+        /* Linha de edição inline */
+        .tarefa-edit { display: none; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .tarefa-edit input[type="text"] { flex: 1; min-width: 120px; padding: 6px 8px; border: 1px solid #aaa; border-radius: 4px; font-size: 0.95em; }
+        .tarefa-edit label { display: flex; align-items: center; gap: 4px; font-size: 0.9em; white-space: nowrap; }
+
+        /* Botões */
+        button { cursor: pointer; padding: 5px 10px; border: none; border-radius: 4px; color: white; font-size: 0.85em; }
+        button:hover { filter: brightness(0.88); }
+        .btn-adicionar { background: #007bff; padding: 8px 14px; font-size: 1em; white-space: nowrap; }
+        .btn-concluir  { background: #28a745; }
+        .btn-editar    { background: #fd7e14; }
+        .btn-salvar    { background: #007bff; }
+        .btn-cancelar  { background: #6c757d; }
+        .btn-excluir   { background: #dc3545; }
+        .btn-atualizar { background: #6c757d; margin-bottom: 12px; font-size: 0.9em; }
     </style>
 </head>
 <body>
@@ -33,11 +51,11 @@
 
     <form class="form-nova-tarefa" onsubmit="criarTarefa(event)">
         <input type="text" id="input-descricao" placeholder="Descrição da nova tarefa..." maxlength="255" required>
-        <button type="submit">Adicionar</button>
+        <button type="submit" class="btn-adicionar">Adicionar</button>
     </form>
     <p class="mensagem-erro" id="erro-criar"></p>
 
-    <button onclick="carregarTarefas()">Atualizar Lista</button>
+    <button class="btn-atualizar" onclick="carregarTarefas()">Atualizar Lista</button>
     <ul id="lista-tarefas">
         <li>Carregando tarefas...</li>
     </ul>
@@ -48,10 +66,8 @@
 
     async function carregarTarefas() {
         const listaUl = document.getElementById('lista-tarefas');
-
         try {
             const response = await fetch(API_URL);
-
             if (!response.ok) throw new Error('Erro ao buscar dados da API');
 
             const tarefas = await response.json();
@@ -62,25 +78,93 @@
                 return;
             }
 
-            tarefas.forEach(tarefa => {
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    <span class="info-tarefa ${tarefa.concluida ? 'concluida' : ''}">
-                        <strong>#${tarefa.id}</strong> - ${escapeHtml(tarefa.descricao)}
-                    </span>
-                    <span class="badge ${tarefa.concluida ? 'status-ok' : 'status-pendente'}">
-                        ${tarefa.concluida ? 'Concluída' : 'Pendente'}
-                    </span>
-                    ${!tarefa.concluida
-                        ? `<button class="btn-concluir" onclick="concluirTarefa(${tarefa.id})">Concluir</button>`
-                        : ''}
-                `;
-                listaUl.appendChild(li);
-            });
+            tarefas.forEach(tarefa => listaUl.appendChild(criarItemTarefa(tarefa)));
 
         } catch (error) {
             console.error('Erro:', error);
             listaUl.innerHTML = `<li style="color:red">Erro ao conectar com a API: ${escapeHtml(error.message)}</li>`;
+        }
+    }
+
+    function criarItemTarefa(tarefa) {
+        const li = document.createElement('li');
+        li.id = `tarefa-${tarefa.id}`;
+
+        // --- Linha de visualização ---
+        const viewDiv = document.createElement('div');
+        viewDiv.className = 'tarefa-view';
+        viewDiv.innerHTML = `
+            <span class="info-tarefa ${tarefa.concluida ? 'concluida' : ''}">
+                <strong>#${tarefa.id}</strong> — ${escapeHtml(tarefa.descricao)}
+            </span>
+            <span class="badge ${tarefa.concluida ? 'status-ok' : 'status-pendente'}">
+                ${tarefa.concluida ? 'Concluída' : 'Pendente'}
+            </span>
+            ${!tarefa.concluida
+                ? `<button class="btn-concluir" onclick="concluirTarefa(${tarefa.id})">Concluir</button>`
+                : ''}
+            <button class="btn-editar" onclick="abrirEdicao(${tarefa.id})">Editar</button>
+            <button class="btn-excluir" onclick="excluirTarefa(${tarefa.id})">Excluir</button>
+        `;
+
+        // --- Linha de edição inline ---
+        const editDiv = document.createElement('div');
+        editDiv.className = 'tarefa-edit';
+        editDiv.id = `edit-${tarefa.id}`;
+        editDiv.innerHTML = `
+            <input type="text" id="edit-desc-${tarefa.id}" value="${escapeHtml(tarefa.descricao)}" maxlength="255">
+            <label>
+                <input type="checkbox" id="edit-conc-${tarefa.id}" ${tarefa.concluida ? 'checked' : ''}>
+                Concluída
+            </label>
+            <button class="btn-salvar"  onclick="salvarEdicao(${tarefa.id})">Salvar</button>
+            <button class="btn-cancelar" onclick="fecharEdicao(${tarefa.id})">Cancelar</button>
+        `;
+
+        li.appendChild(viewDiv);
+        li.appendChild(editDiv);
+        return li;
+    }
+
+    function abrirEdicao(id) {
+        document.querySelector(`#tarefa-${id} .tarefa-view`).style.display = 'none';
+        const editDiv = document.getElementById(`edit-${id}`);
+        editDiv.style.display = 'flex';
+        document.getElementById(`edit-desc-${id}`).focus();
+    }
+
+    function fecharEdicao(id) {
+        document.querySelector(`#tarefa-${id} .tarefa-view`).style.display = 'flex';
+        document.getElementById(`edit-${id}`).style.display = 'none';
+    }
+
+    async function salvarEdicao(id) {
+        const descricao = document.getElementById(`edit-desc-${id}`).value.trim();
+        const concluida = document.getElementById(`edit-conc-${id}`).checked;
+
+        if (!descricao) {
+            alert('A descrição não pode ser vazia.');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_URL}/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ descricao, concluida })
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                alert(data.mensagem || 'Erro ao salvar tarefa.');
+                return;
+            }
+
+            await carregarTarefas();
+
+        } catch (error) {
+            alert('Erro ao conectar com a API.');
+            console.error('Erro:', error);
         }
     }
 
@@ -121,11 +205,35 @@
 
     async function concluirTarefa(id) {
         try {
-            const response = await fetch(`${API_URL}/${id}`, { method: 'PUT' });
+            const response = await fetch(`${API_URL}/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ concluida: true })
+            });
 
             if (!response.ok) {
                 const data = await response.json();
                 alert(data.mensagem || 'Erro ao concluir tarefa.');
+                return;
+            }
+
+            await carregarTarefas();
+
+        } catch (error) {
+            alert('Erro ao conectar com a API.');
+            console.error('Erro:', error);
+        }
+    }
+
+    async function excluirTarefa(id) {
+        if (!confirm(`Deseja excluir a tarefa #${id}?`)) return;
+
+        try {
+            const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+
+            if (!response.ok) {
+                const data = await response.json();
+                alert(data.mensagem || 'Erro ao excluir tarefa.');
                 return;
             }
 

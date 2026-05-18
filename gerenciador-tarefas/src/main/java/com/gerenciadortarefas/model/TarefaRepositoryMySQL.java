@@ -42,6 +42,17 @@ public class TarefaRepositoryMySQL implements TarefaRepository{
         }
     }
 
+    public boolean deletarTarefa(int id) {
+        String sql = "DELETE FROM gerenciador_tarefa.tarefas WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao deletar tarefa", e);
+        }
+    }
+
     public List<Tarefa> listarTarefas(){
         List<Tarefa> tarefas = new ArrayList<>();
         String sql = "SELECT id, descricao, concluida FROM gerenciador_tarefa.tarefas";

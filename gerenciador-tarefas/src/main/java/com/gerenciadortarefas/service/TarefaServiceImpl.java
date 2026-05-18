@@ -39,4 +39,25 @@ public class TarefaServiceImpl implements TarefaService {
         }
         return Optional.empty();
     }
+
+    @Override
+    public Optional<Tarefa> atualizarTarefa(int id, String descricao, Boolean concluida) {
+        Optional<Tarefa> tarefaOptional = repository.buscarPorId(id);
+        if (tarefaOptional.isEmpty()) {
+            return Optional.empty();
+        }
+        Tarefa atual = tarefaOptional.get();
+        String novaDescricao = (descricao != null && !descricao.isBlank()) ? descricao.trim() : atual.descricao();
+        boolean novaConcluida = (concluida != null) ? concluida : atual.concluida();
+        Tarefa tarefaAtualizada = new Tarefa(id, novaDescricao, novaConcluida);
+        if (repository.atualizarTarefa(tarefaAtualizada)) {
+            return Optional.of(tarefaAtualizada);
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public boolean deletarTarefa(int id) {
+        return repository.deletarTarefa(id);
+    }
 }
