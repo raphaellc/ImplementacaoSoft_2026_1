@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Configurar MFA — Gerenciador de Tarefas</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background: #f4f4f9; }
+        .card { max-width: 420px; margin: 40px auto; background: #fff; padding: 24px;
+                border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h1 { font-size: 1.3em; margin: 0 0 12px; }
+        ol { padding-left: 20px; font-size: 0.95em; line-height: 1.6; }
+        .qr { text-align: center; margin: 16px 0; }
+        .qr img { max-width: 220px; }
+        .secret { background: #f1f1f1; padding: 8px; border-radius: 4px;
+                  font-family: monospace; font-size: 0.85em; word-break: break-all; }
+        input { padding: 9px; border: 1px solid #ccc; border-radius: 4px; font-size: 1em; width: 100%; box-sizing: border-box; }
+        button { padding: 10px 16px; background: #28a745; color: #fff; border: none;
+                 border-radius: 4px; cursor: pointer; margin-top: 8px; }
+        .erro    { color: red; font-size: 0.9em; min-height: 1.2em; }
+        .sucesso { color: #28a745; font-size: 0.95em; }
+        a { color: #007bff; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>Ativar autenticação em dois fatores</h1>
+    <ol>
+        <li>Instale o <b>Google Authenticator</b> (ou Authy/1Password) no seu celular.</li>
+        <li>Escaneie o QR Code abaixo.</li>
+        <li>Digite o código de 6 dígitos que aparecer no app para confirmar.</li>
+    </ol>
+
+    <div class="qr" id="qr-area">Gerando QR Code...</div>
+    <p style="font-size:0.85em;color:#666">Não consegue escanear? Digite manualmente esta chave:</p>
+    <div class="secret" id="secret-text">—</div>
+
+    <form onsubmit="confirmar(event)" style="margin-top:16px">
+        <input type="text" id="codigo" placeholder="000000" maxlength="6" pattern="\d{6}" required>
+        <button type="submit">Confirmar e ativar MFA</button>
+    </form>
+    <p class="erro" id="msg"></p>
+    <p style="margin-top:16px"><a href="/">← Voltar ao gerenciador</a></p>
+</div>
+
+<script>
+    const CSRF = sessionStorage.getItem('csrfToken');
+
+    async function carregar() {
+        if (!CSRF) { location.href = '/login.html'; return; }
+        const r = await fetch('/auth/account/mfa/setup', {
+            method: 'POST',
+            headers: { 'X-CSRF-Token': CSRF },
+            credentials: 'include'
+        });
+        if (r.status === 401) { location.href = '/login.html'; return; }
+        const data = await r.json();
+        document.getElementById('qr-area').innerHTML = `<img src="${data.qrCode}" alt="QR Code">`;
+        document.getElementById('secret-text').textContent = data.secret;
+    }
+
+    async function confirmar(e) {
+        e.preventDefault();
+        const msg = document.getElementById('msg');
+        msg.className = 'erro'; msg.textContent = '';
+        const r = await fetch('/auth/account/mfa/confirm', {
+            method: 'POST',
+            headers: { 'Content-Type':'application/json', 'X-CSRF-Token': CSRF },
+            credentials: 'include',
+            body: JSON.stringify({ codigo: document.getElementById('codigo').value })
+        });
+        const data = await r.json();
+        if (!r.ok) { msg.textContent = data.mensagem || 'Código inválido'; return; }
+        msg.className = 'sucesso';
+        msg.textContent = 'MFA ativado! No próximo login você precisará do código do app.';
+    }
+
+    carregar();
+</script>
+
+</body>
+</html>
