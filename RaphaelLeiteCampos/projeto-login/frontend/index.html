@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sistema de Login — Aula MVC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:        #0d1117;
+      --surface:   #161b22;
+      --border:    #30363d;
+      --accent:    #58a6ff;
+      --accent2:   #3fb950;
+      --danger:    #f85149;
+      --text:      #e6edf3;
+      --muted:     #8b949e;
+      --mono:      'IBM Plex Mono', monospace;
+      --sans:      'IBM Plex Sans', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      animation: fadeDown .6s ease both;
+    }
+    .badge {
+      font-family: var(--mono);
+      font-size: .7rem;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: .2rem .7rem;
+      border-radius: 2px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      display: inline-block;
+      margin-bottom: .8rem;
+    }
+    header h1 {
+      font-size: 1.6rem;
+      font-weight: 300;
+      letter-spacing: -.02em;
+    }
+    header h1 span { color: var(--accent); font-weight: 600; }
+    header p {
+      color: var(--muted);
+      font-size: .85rem;
+      margin-top: .4rem;
+      font-family: var(--mono);
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      width: 100%;
+      max-width: 440px;
+      overflow: hidden;
+      animation: fadeUp .6s .1s ease both;
+    }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+    }
+    .tab {
+      flex: 1;
+      padding: .8rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: .8rem;
+      color: var(--muted);
+      letter-spacing: .05em;
+      transition: color .2s, background .2s;
+    }
+    .tab.active {
+      color: var(--accent);
+      background: rgba(88,166,255,.06);
+      border-bottom: 2px solid var(--accent);
+    }
+    .tab:hover:not(.active) { color: var(--text); background: rgba(255,255,255,.03); }
+
+    /* ── Forms ── */
+    .form-panel { display: none; padding: 1.8rem; }
+    .form-panel.active { display: block; }
+
+    .field { margin-bottom: 1.2rem; }
+    label {
+      display: block;
+      font-family: var(--mono);
+      font-size: .72rem;
+      color: var(--muted);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: .4rem;
+    }
+    input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: .65rem .9rem;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: .9rem;
+      transition: border-color .2s, box-shadow .2s;
+      outline: none;
+    }
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(88,166,255,.15);
+    }
+    input::placeholder { color: #3c444d; }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: .75rem;
+      margin-top: .4rem;
+      background: var(--accent);
+      color: #0d1117;
+      border: none;
+      border-radius: 4px;
+      font-family: var(--mono);
+      font-size: .85rem;
+      font-weight: 600;
+      letter-spacing: .05em;
+      cursor: pointer;
+      transition: opacity .2s, transform .1s;
+    }
+    button[type="submit"]:hover { opacity: .88; }
+    button[type="submit"]:active { transform: scale(.98); }
+    button[type="submit"]:disabled { opacity: .4; cursor: not-allowed; }
+
+    /* ── Alert ── */
+    .alert {
+      display: none;
+      margin-top: 1rem;
+      padding: .8rem 1rem;
+      border-radius: 4px;
+      font-family: var(--mono);
+      font-size: .8rem;
+      line-height: 1.5;
+    }
+    .alert.success { background: rgba(63,185,80,.1); border: 1px solid var(--accent2); color: var(--accent2); }
+    .alert.error   { background: rgba(248,81,73,.1);  border: 1px solid var(--danger);  color: var(--danger); }
+
+    /* ── Console ── */
+    .console-wrap {
+      width: 100%;
+      max-width: 440px;
+      margin-top: 1.5rem;
+      animation: fadeUp .6s .2s ease both;
+    }
+    .console-title {
+      font-family: var(--mono);
+      font-size: .7rem;
+      color: var(--muted);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: .5rem .9rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 4px 4px 0 0;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .dot-r { background: #f85149; } .dot-y { background: #e3b341; } .dot-g { background: #3fb950; }
+    #console {
+      background: #010409;
+      border: 1px solid var(--border);
+      border-radius: 0 0 4px 4px;
+      padding: .9rem;
+      font-family: var(--mono);
+      font-size: .78rem;
+      color: #8b949e;
+      min-height: 110px;
+      max-height: 200px;
+      overflow-y: auto;
+      line-height: 1.6;
+    }
+    .log-req  { color: var(--accent); }
+    .log-ok   { color: var(--accent2); }
+    .log-err  { color: var(--danger); }
+    .log-info { color: #d2a8ff; }
+
+    /* ── Animations ── */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .spin {
+      display: inline-block;
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="badge">Aula 1 · MVC sem Spring Boot</div>
+    <h1>Sistema de <span>Login</span></h1>
+    <p>REST API → Java + H2 · porta 8080</p>
+  </header>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="tab active" onclick="trocarTab('login')">$ login</button>
+      <button class="tab"        onclick="trocarTab('cadastro')">$ cadastro</button>
+    </div>
+
+    <!-- Login -->
+    <div id="panel-login" class="form-panel active">
+      <div class="field">
+        <label>E-mail</label>
+        <input type="email" id="l-email" placeholder="usuario@email.com" />
+      </div>
+      <div class="field">
+        <label>Senha</label>
+        <input type="password" id="l-senha" placeholder="••••••••" />
+      </div>
+      <button type="submit" id="btn-login" onclick="fazerLogin()">Entrar</button>
+      <div id="alert-login" class="alert"></div>
+    </div>
+
+    <!-- Cadastro -->
+    <div id="panel-cadastro" class="form-panel">
+      <div class="field">
+        <label>Nome completo</label>
+        <input type="text" id="c-nome" placeholder="Seu nome" />
+      </div>
+      <div class="field">
+        <label>E-mail</label>
+        <input type="email" id="c-email" placeholder="usuario@email.com" />
+      </div>
+      <div class="field">
+        <label>Senha (mín. 6 caracteres)</label>
+        <input type="password" id="c-senha" placeholder="••••••••" />
+      </div>
+      <button type="submit" id="btn-cadastro" onclick="fazerCadastro()">Criar conta</button>
+      <div id="alert-cadastro" class="alert"></div>
+    </div>
+  </div>
+
+  <!-- Console de requisições -->
+  <div class="console-wrap">
+    <div class="console-title">
+      <span class="dot dot-r"></span>
+      <span class="dot dot-y"></span>
+      <span class="dot dot-g"></span>
+      console de rede
+    </div>
+    <div id="console">
+      <span class="log-info">// Aguardando requisições...</span><br/>
+      <span class="log-info">// API: http://localhost:8080/api</span><br/>
+    </div>
+  </div>
+
+  <script>
+    const API = 'http://localhost:8080/api';
+
+    // ── Alternância de abas ──
+    function trocarTab(aba) {
+      document.querySelectorAll('.tab').forEach((t, i) => {
+        t.classList.toggle('active', ['login','cadastro'][i] === aba);
+      });
+      document.getElementById('panel-login').classList.toggle('active', aba === 'login');
+      document.getElementById('panel-cadastro').classList.toggle('active', aba === 'cadastro');
+    }
+
+    // ── Exibe alerta ──
+    function mostrarAlerta(id, tipo, msg) {
+      const el = document.getElementById(id);
+      el.className = 'alert ' + tipo;
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
+
+    // ── Log no console ──
+    function log(tipo, texto) {
+      const c = document.getElementById('console');
+      const span = document.createElement('span');
+      span.className = 'log-' + tipo;
+      span.textContent = texto;
+      c.appendChild(span);
+      c.appendChild(document.createElement('br'));
+      c.scrollTop = c.scrollHeight;
+    }
+
+    // ── Login ──
+    async function fazerLogin() {
+      const email = document.getElementById('l-email').value.trim();
+      const senha = document.getElementById('l-senha').value;
+      const btn   = document.getElementById('btn-login');
+      const alerta = 'alert-login';
+
+      if (!email || !senha) {
+        mostrarAlerta(alerta, 'error', '⚠ Preencha todos os campos.');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spin">⟳</span> Verificando...';
+
+      const payload = { email, senha };
+      log('req', `→ POST /api/login  ${JSON.stringify(payload)}`);
+
+      try {
+        const res  = await fetch(`${API}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        log('info', `← HTTP ${res.status}`);
+        log(data.sucesso ? 'ok' : 'err', `   ${JSON.stringify(data)}`);
+
+        if (data.sucesso) {
+          mostrarAlerta(alerta, 'success', `✓ Bem-vindo, ${data.nomeUsuario}!\nToken: ${data.token.substring(0,16)}...`);
+        } else {
+          mostrarAlerta(alerta, 'error', '✗ ' + data.mensagem);
+        }
+      } catch (e) {
+        log('err', `✗ Erro de conexão: ${e.message}`);
+        mostrarAlerta(alerta, 'error', '✗ Não foi possível conectar ao servidor.\nVerifique se o Java está rodando na porta 8080.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Entrar';
+      }
+    }
+
+    // ── Cadastro ──
+    async function fazerCadastro() {
+      const nome  = document.getElementById('c-nome').value.trim();
+      const email = document.getElementById('c-email').value.trim();
+      const senha = document.getElementById('c-senha').value;
+      const btn   = document.getElementById('btn-cadastro');
+      const alerta = 'alert-cadastro';
+
+      if (!nome || !email || !senha) {
+        mostrarAlerta(alerta, 'error', '⚠ Preencha todos os campos.');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spin">⟳</span> Criando conta...';
+
+      const payload = { nome, email, senha };
+      log('req', `→ POST /api/cadastro  ${JSON.stringify({nome, email, senha: '***'})}`);
+
+      try {
+        const res  = await fetch(`${API}/cadastro`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        log('info', `← HTTP ${res.status}`);
+        log(data.sucesso ? 'ok' : 'err', `   ${JSON.stringify(data)}`);
+
+        if (data.sucesso) {
+          mostrarAlerta(alerta, 'success', `✓ Conta criada, ${data.nomeUsuario}!\nAgora faça login na aba ao lado.`);
+        } else {
+          mostrarAlerta(alerta, 'error', '✗ ' + data.mensagem);
+        }
+      } catch (e) {
+        log('err', `✗ Erro de conexão: ${e.message}`);
+        mostrarAlerta(alerta, 'error', '✗ Não foi possível conectar ao servidor.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Criar conta';
+      }
+    }
+
+    // Enter para submeter
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'Enter') return;
+      const active = document.querySelector('.form-panel.active').id;
+      if (active === 'panel-login')    fazerLogin();
+      if (active === 'panel-cadastro') fazerCadastro();
+    });
+  </script>
+</body>
+</html>

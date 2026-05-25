@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<body>
+    <h2>Login do Sistema Social</h2>
+    <form id="loginForm">
+        <label for="user">Usuário:</label>
+        <input type="text" id="user" required aria-label="Digite seu usuário">
+        <br>
+        <label for="pass">Senha:</label>
+        <input type="password" id="pass" required aria-label="Digite sua senha">
+        <br>
+        <button type="submit">Entrar</button>
+    </form>
+    <p id="msg"></p>
+
+    <script>
+        document.getElementById('loginForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const resp = await fetch('/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    login: document.getElementById('user').value,
+                    senha: document.getElementById('pass').value
+                })
+            });
+            const result = await resp.json();
+            document.getElementById('msg').innerText = result.status;
+        };
+    </script>
+</body>
+</html>
