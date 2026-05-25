@@ -3,8 +3,10 @@
 ## Visão Geral
 
 API REST de gerenciamento de tarefas escrita em **Java puro** (sem Spring Boot).
-Usa `com.sun.net.httpserver.HttpServer` (JDK built-in) e JDBC direto.
-Banco de dados padrão: **H2 in-memory**. Implementação MySQL também existe, mas está desativada.
+Usa `com.sun.net.httpserver.HttpServer` (JDK built-in) e JDBC via HikariCP.
+Banco de dados padrão: **H2 em modo file** (`./data/tarefadb`). Implementação MySQL também existe, mas está desativada.
+
+**Autenticação**: BCrypt + sessão server-side (cookie HttpOnly) + MFA TOTP (Google Authenticator) + CSRF token + rate limiting. Tarefas são escopadas por `usuario_id`.
 
 ## Como rodar
 

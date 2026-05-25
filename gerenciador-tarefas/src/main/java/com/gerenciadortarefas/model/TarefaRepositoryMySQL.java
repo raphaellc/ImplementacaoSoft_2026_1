@@ -3,23 +3,23 @@ package com.gerenciadortarefas.model;
 import com.gerenciadortarefas.util.DatabaseConnection;
 
 import java.sql.*;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
-public class TarefaRepositoryMySQL implements TarefaRepository{
+public class TarefaRepositoryMySQL implements TarefaRepository {
 
-    public Tarefa adicionarTarefa(String descricao){
-        String sql = "INSERT INTO gerenciador_tarefa.tarefas (descricao, concluida) VALUES (?, ?)";
+    @Override
+    public Tarefa adicionarTarefa(int usuarioId, String descricao){
+        String sql = "INSERT INTO gerenciador_tarefa.tarefas (usuario_id, descricao, concluida) VALUES (?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            pstmt.setString(1, descricao);
-            pstmt.setBoolean(2, false);
+            pstmt.setInt(1, usuarioId);
+            pstmt.setString(2, descricao);
+            pstmt.setBoolean(3, false);
             pstmt.executeUpdate();
             try (ResultSet rs = pstmt.getGeneratedKeys()) {
-                if (rs.next()) {
-                    return new Tarefa(rs.getInt(1), descricao, false);
-                }
+                if (rs.next()) return new Tarefa(rs.getInt(1), usuarioId, descricao, false);
             }
             throw new RuntimeException("Erro ao obter ID gerado para a tarefa");
         } catch (SQLException e) {
@@ -27,44 +27,47 @@ public class TarefaRepositoryMySQL implements TarefaRepository{
         }
     }
 
-    public boolean atualizarTarefa(Tarefa tarefaAtualizada){
-        if (tarefaAtualizada == null) return false;
-        String sql = "UPDATE gerenciador_tarefa.tarefas SET descricao = ?, concluida = ? WHERE id = ?";
+    @Override
+    public boolean atualizarTarefa(Tarefa t){
+        if (t == null) return false;
+        String sql = "UPDATE gerenciador_tarefa.tarefas SET descricao = ?, concluida = ? WHERE id = ? AND usuario_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, tarefaAtualizada.descricao());
-            pstmt.setBoolean(2, tarefaAtualizada.concluida());
-            pstmt.setInt(3, tarefaAtualizada.id());
-            int affectedRows = pstmt.executeUpdate();
-            return affectedRows > 0;
+            pstmt.setString(1, t.descricao());
+            pstmt.setBoolean(2, t.concluida());
+            pstmt.setInt(3, t.id());
+            pstmt.setInt(4, t.usuarioId());
+            return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao atualizar tarefa", e);
         }
     }
 
-    public boolean deletarTarefa(int id) {
-        String sql = "DELETE FROM gerenciador_tarefa.tarefas WHERE id = ?";
+    @Override
+    public boolean deletarTarefa(int usuarioId, int id) {
+        String sql = "DELETE FROM gerenciador_tarefa.tarefas WHERE id = ? AND usuario_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, id);
+            pstmt.setInt(2, usuarioId);
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao deletar tarefa", e);
         }
     }
 
-    public List<Tarefa> listarTarefas(){
+    @Override
+    public List<Tarefa> listarTarefas(int usuarioId){
         List<Tarefa> tarefas = new ArrayList<>();
-        String sql = "SELECT id, descricao, concluida FROM gerenciador_tarefa.tarefas";
+        String sql = "SELECT id, usuario_id, descricao, concluida FROM gerenciador_tarefa.tarefas WHERE usuario_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String descricao = rs.getString("descricao");
-                boolean concluida = rs.getBoolean("concluida");
-                tarefas.add(new Tarefa(id, descricao, concluida));
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, usuarioId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    tarefas.add(new Tarefa(rs.getInt("id"), rs.getInt("usuario_id"),
+                            rs.getString("descricao"), rs.getBoolean("concluida")));
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao listar tarefas", e);
@@ -72,17 +75,17 @@ public class TarefaRepositoryMySQL implements TarefaRepository{
         return tarefas;
     }
 
-    public Optional<Tarefa> buscarPorId(int id) {
-        String sql = "SELECT id, descricao, concluida FROM gerenciador_tarefa.tarefas WHERE id = ?";
-        // Corrigido: ResultSet no try-with-resources para garantir fechamento explícito
+    @Override
+    public Optional<Tarefa> buscarPorId(int usuarioId, int id) {
+        String sql = "SELECT id, usuario_id, descricao, concluida FROM gerenciador_tarefa.tarefas WHERE id = ? AND usuario_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, id);
+            pstmt.setInt(2, usuarioId);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    String descricao = rs.getString("descricao");
-                    boolean concluida = rs.getBoolean("concluida");
-                    return Optional.of(new Tarefa(id, descricao, concluida));
+                    return Optional.of(new Tarefa(rs.getInt("id"), rs.getInt("usuario_id"),
+                            rs.getString("descricao"), rs.getBoolean("concluida")));
                 }
             }
         } catch (SQLException e) {

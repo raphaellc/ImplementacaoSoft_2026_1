@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — Gerenciador de Tarefas</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background: #f4f4f9; }
+        .card { max-width: 380px; margin: 60px auto; background: #fff; padding: 24px;
+                border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h1 { margin: 0 0 16px; color: #333; font-size: 1.4em; }
+        form { display: flex; flex-direction: column; gap: 10px; }
+        input { padding: 9px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 1em; }
+        button { padding: 10px; background: #007bff; color: #fff; border: none;
+                 border-radius: 4px; font-size: 1em; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .erro { color: red; font-size: 0.9em; min-height: 1.2em; }
+        .alt  { margin-top: 12px; text-align: center; font-size: 0.9em; }
+        .alt a { color: #007bff; cursor: pointer; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="card" id="card-login">
+    <h1>Entrar</h1>
+    <form onsubmit="entrar(event)">
+        <input type="text" id="login" placeholder="E-mail ou username" required autocomplete="username">
+        <input type="password" id="senha" placeholder="Senha" required autocomplete="current-password">
+        <button type="submit">Entrar</button>
+    </form>
+    <p class="erro" id="erro-login"></p>
+    <p class="alt">Não tem conta? <a onclick="mostrar('card-registro')">Cadastre-se</a></p>
+</div>
+
+<div class="card hidden" id="card-mfa">
+    <h1>Código de verificação</h1>
+    <p style="font-size:0.9em;color:#666">Abra seu Google Authenticator e digite o código de 6 dígitos.</p>
+    <form onsubmit="verificarMfa(event)">
+        <input type="text" id="codigo" placeholder="000000" maxlength="6" pattern="\d{6}" required autocomplete="one-time-code">
+        <button type="submit">Verificar</button>
+    </form>
+    <p class="erro" id="erro-mfa"></p>
+</div>
+
+<div class="card hidden" id="card-registro">
+    <h1>Criar conta</h1>
+    <form onsubmit="registrar(event)">
+        <input type="email" id="reg-email" placeholder="E-mail" required>
+        <input type="text"  id="reg-username" placeholder="Username" required minlength="3" maxlength="60">
+        <input type="password" id="reg-senha" placeholder="Senha (≥ 8 chars, letras e números)" required minlength="8">
+        <button type="submit">Cadastrar</button>
+    </form>
+    <p class="erro" id="erro-registro"></p>
+    <p class="alt"><a onclick="mostrar('card-login')">← Voltar ao login</a></p>
+</div>
+
+<script>
+    let mfaToken = null;
+
+    function mostrar(id) {
+        ['card-login','card-mfa','card-registro'].forEach(c =>
+            document.getElementById(c).classList.toggle('hidden', c !== id));
+    }
+
+    async function entrar(e) {
+        e.preventDefault();
+        const erro = document.getElementById('erro-login');
+        erro.textContent = '';
+        const body = {
+            login: document.getElementById('login').value.trim(),
+            senha: document.getElementById('senha').value
+        };
+        try {
+            const r = await fetch('/auth/login', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                credentials: 'include',
+                body: JSON.stringify(body)
+            });
+            const data = await r.json();
+            if (!r.ok) { erro.textContent = data.mensagem || 'Erro'; return; }
+            if (data.status === 'mfa_requerido') {
+                mfaToken = data.mfaToken;
+                mostrar('card-mfa');
+                document.getElementById('codigo').focus();
+            } else {
+                sessionStorage.setItem('csrfToken', data.csrfToken);
+                window.location.href = '/';
+            }
+        } catch (err) { erro.textContent = 'Erro de conexão'; }
+    }
+
+    async function verificarMfa(e) {
+        e.preventDefault();
+        const erro = document.getElementById('erro-mfa');
+        erro.textContent = '';
+        try {
+            const r = await fetch('/auth/mfa/verify', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                credentials: 'include',
+                body: JSON.stringify({ mfaToken, codigo: document.getElementById('codigo').value })
+            });
+            const data = await r.json();
+            if (!r.ok) { erro.textContent = data.mensagem || 'Código inválido'; return; }
+            sessionStorage.setItem('csrfToken', data.csrfToken);
+            window.location.href = '/';
+        } catch (err) { erro.textContent = 'Erro de conexão'; }
+    }
+
+    async function registrar(e) {
+        e.preventDefault();
+        const erro = document.getElementById('erro-registro');
+        erro.textContent = '';
+        const body = {
+            email:    document.getElementById('reg-email').value.trim(),
+            username: document.getElementById('reg-username').value.trim(),
+            senha:    document.getElementById('reg-senha').value
+        };
+        try {
+            const r = await fetch('/auth/register', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify(body)
+            });
+            const data = await r.json();
+            if (!r.ok) { erro.textContent = data.mensagem || 'Erro ao cadastrar'; return; }
+            // Cadastro OK — faz login direto preenchendo os campos
+            document.getElementById('login').value = body.email;
+            document.getElementById('senha').value = body.senha;
+            mostrar('card-login');
+            entrar(new Event('submit'));
+        } catch (err) { erro.textContent = 'Erro de conexão'; }
+    }
+</script>
+
+</body>
+</html>

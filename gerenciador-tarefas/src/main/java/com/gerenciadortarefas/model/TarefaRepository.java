@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TarefaRepository {
-    Tarefa adicionarTarefa(String descricao);
+    Tarefa adicionarTarefa(int usuarioId, String descricao);
     boolean atualizarTarefa(Tarefa tarefaAtualizada);
-    boolean deletarTarefa(int id);
-    List<Tarefa> listarTarefas();
-    Optional<Tarefa> buscarPorId(int id);
+    boolean deletarTarefa(int usuarioId, int id);
+    List<Tarefa> listarTarefas(int usuarioId);
+    Optional<Tarefa> buscarPorId(int usuarioId, int id);
 }

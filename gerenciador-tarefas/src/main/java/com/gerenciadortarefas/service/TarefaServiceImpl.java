@@ -6,58 +6,46 @@ import java.util.List;
 import java.util.Optional;
 
 public class TarefaServiceImpl implements TarefaService {
-    private TarefaRepository repository;
+    private final TarefaRepository repository;
 
     public TarefaServiceImpl(TarefaRepository repository) {
         this.repository = repository;
     }
 
     @Override
-    public Tarefa adicionarTarefa(String descricao) {
-        if (descricao == null || descricao.isBlank()) {
+    public Tarefa adicionarTarefa(int usuarioId, String descricao) {
+        if (descricao == null || descricao.isBlank())
             throw new IllegalArgumentException("A descrição não pode ser vazia");
-        }
-        if (descricao.length() > 255) {
+        if (descricao.length() > 255)
             throw new IllegalArgumentException("A descrição deve ter no máximo 255 caracteres");
-        }
-        return repository.adicionarTarefa(descricao.trim());
+        return repository.adicionarTarefa(usuarioId, descricao.trim());
     }
 
     @Override
-    public List<Tarefa> listarTarefas() {
-        return repository.listarTarefas();
+    public List<Tarefa> listarTarefas(int usuarioId) {
+        return repository.listarTarefas(usuarioId);
     }
 
     @Override
-    public Optional<Tarefa> marcarTarefaConcluida(int id) {
-        Optional<Tarefa> tarefaOptional = repository.buscarPorId(id);
-        if (tarefaOptional.isPresent()) {
-            Tarefa tarefaModificada = tarefaOptional.get().comConcluida(true);
-            if (repository.atualizarTarefa(tarefaModificada)) {
-                return Optional.of(tarefaModificada);
-            }
-        }
-        return Optional.empty();
+    public Optional<Tarefa> marcarTarefaConcluida(int usuarioId, int id) {
+        return repository.buscarPorId(usuarioId, id)
+                .map(t -> t.comConcluida(true))
+                .filter(repository::atualizarTarefa);
     }
 
     @Override
-    public Optional<Tarefa> atualizarTarefa(int id, String descricao, Boolean concluida) {
-        Optional<Tarefa> tarefaOptional = repository.buscarPorId(id);
-        if (tarefaOptional.isEmpty()) {
-            return Optional.empty();
-        }
-        Tarefa atual = tarefaOptional.get();
+    public Optional<Tarefa> atualizarTarefa(int usuarioId, int id, String descricao, Boolean concluida) {
+        Optional<Tarefa> opt = repository.buscarPorId(usuarioId, id);
+        if (opt.isEmpty()) return Optional.empty();
+        Tarefa atual = opt.get();
         String novaDescricao = (descricao != null && !descricao.isBlank()) ? descricao.trim() : atual.descricao();
         boolean novaConcluida = (concluida != null) ? concluida : atual.concluida();
-        Tarefa tarefaAtualizada = new Tarefa(id, novaDescricao, novaConcluida);
-        if (repository.atualizarTarefa(tarefaAtualizada)) {
-            return Optional.of(tarefaAtualizada);
-        }
-        return Optional.empty();
+        Tarefa nova = new Tarefa(id, usuarioId, novaDescricao, novaConcluida);
+        return repository.atualizarTarefa(nova) ? Optional.of(nova) : Optional.empty();
     }
 
     @Override
-    public boolean deletarTarefa(int id) {
-        return repository.deletarTarefa(id);
+    public boolean deletarTarefa(int usuarioId, int id) {
+        return repository.deletarTarefa(usuarioId, id);
     }
 }
