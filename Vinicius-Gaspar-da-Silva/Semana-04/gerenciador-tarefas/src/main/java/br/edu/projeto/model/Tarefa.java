@@ -1,0 +1,9 @@
+package br.edu.projeto.model;
+
+public record Tarefa(int id, String descricao, boolean concluida) {
+    
+    public Tarefa tarefaComConcluida(boolean status) {
+        return new Tarefa(this.id, this.descricao, status);
+    }
+
+}
